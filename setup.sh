@@ -52,6 +52,25 @@ brew install --cask google-chrome
 brew install --cask spotify
 
 ################################################
+##### GNU utils
+################################################
+
+# References:
+# https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
+
+brew install autoconf bash binutils coreutils diffutils ed findutils flex gawk \
+    gnu-indent gnu-sed gnu-tar gnu-which gpatch grep gzip less m4 make nano \
+    screen watch wdiff wget zip
+
+tee ${HOME}/.zshrc.d/gnu-utils << 'EOF'
+if type brew &>/dev/null; then
+  NEWPATH=${PATH}
+  for d in /opt/homebrew/opt/*/libexec/gnubin; do NEWPATH=$d:$NEWPATH; done
+  export PATH=$(echo ${NEWPATH} | tr ':' '\n' | cat -n | sort -uk2 | sort -n | cut -f2- | xargs | tr ' ' ':')
+fi
+EOF
+
+################################################
 ##### iTerm2
 ################################################
 
@@ -71,6 +90,9 @@ sudo gsed -i '1 a auth       sufficient     pam_tid.so' /etc/pam.d/sudo
 
 # Install Wireguard tools
 brew install wireguard-tools
+
+# Create wireguard folder
+sudo mkdir /etc/wireguard
 
 # Configure LaunchDaemon for wg0
 sudo tee /Library/LaunchDaemons/com.wireguard.wg0.plist << 'EOF'
@@ -105,7 +127,7 @@ sudo tee /Library/LaunchDaemons/com.wireguard.wg0.plist << 'EOF'
 </plist>
 EOF
 
-# Enable newly created LaunchDaemon
+# Enable LaunchDaemon
 sudo launchctl enable system/com.wireguard.wg0
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 
@@ -160,6 +182,7 @@ EOF
 ##### keybindings
 ################################################
 
+# Custom key bindings in zsh
 tee ${HOME}/.zshrc.d/keybindings << EOF
 bindkey "[D" backward-word
 bindkey "[C" forward-word

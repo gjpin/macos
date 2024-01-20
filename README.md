@@ -3,6 +3,9 @@
 2. Add Wireguard config file to /etc/wireguard/wg0.conf
 3. Run setup.sh
 
+# Misc guides
+## Applications and system configurations
+```bash
 # References:
 # https://pawelgrzybek.com/change-macos-user-preferences-via-command-line/
 
@@ -23,3 +26,4 @@ defaults read > before
 defaults read > after
 diff before after
 code --diff before after
+```
