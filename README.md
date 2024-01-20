@@ -26,11 +26,7 @@ defaults read > before
 defaults read > after
 diff before after
 code --diff before after
-```
 
-## Enable TouchID for sudo in iTerm2
-```bash
-# For reference only. It's already in iterm2.plist
-defaults write "com.googlecode.iterm2" "BootstrapDaemon" -bool false # Do not "Allow sessions to survive logging out and back in"
-sudo gsed -i '1 a auth       sufficient     pam_tid.so' /etc/pam.d/sudo
+# Write setting example
+defaults write com.googlecode.iterm2 BootstrapDaemon -bool false # Do not "Allow sessions to survive logging out and back in"
 ```

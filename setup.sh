@@ -85,6 +85,9 @@ defaults import com.googlecode.iterm2 ${HOME}/iterm2.plist
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/iterm2/iterm2.plist -o ${HOME}/iterm2.plist
 rm -f ${HOME}/iterm2.plist
 
+# Enable TouchID for sudo in iTerm2
+sudo gsed -i '1 a auth       sufficient     pam_tid.so' /etc/pam.d/sudo
+
 ################################################
 ##### Wireguard
 ################################################
@@ -267,9 +270,9 @@ defaults write com.apple.Accessibility ReduceMotionEnabled -bool true
 defaults write -globalDomain AppleInterfaceStyleSwitchesAutomatically -bool true
 
 # Menu Bar
-defaults write "com.apple.controlcenter" "NSStatusItem Visible Bluetooth" -bool true
-defaults write "com.apple.airplay" showInMenuBarIfPresent -bool false
-defaults write "com.apple.controlcenter" "NSStatusItem Visible Sound" -bool true
+defaults write com.apple.controlcenter "NSStatusItem Visible Bluetooth" -bool true
+defaults write com.apple.airplay showInMenuBarIfPresent -bool false
+defaults write com.apple.controlcenter "NSStatusItem Visible Sound" -bool true
 defaults -currentHost write com.apple.Spotlight MenuItemHidden -int 1
 
 # Ask Siri
