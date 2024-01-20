@@ -80,9 +80,10 @@ EOF
 # Install iTerm2
 brew install --cask iterm2
 
-# Enable TouchID for sudo in iTerm2
-defaults write "com.googlecode.iterm2" "BootstrapDaemon" -bool false # Do not "Allow sessions to survive logging out and back in"
-sudo gsed -i '1 a auth       sufficient     pam_tid.so' /etc/pam.d/sudo
+# Download and import iTerm2 configs
+defaults import com.googlecode.iterm2 ${HOME}/iterm2.plist
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/iterm2/iterm2.plist -o ${HOME}/iterm2.plist
+rm -f ${HOME}/iterm2.plist
 
 ################################################
 ##### Wireguard
@@ -210,6 +211,7 @@ brew tap homebrew/cask-fonts
 
 # Install fonts
 brew install --cask \
+    font-meslo-lg-nerd-font \
     font-fira-code-nerd-font
 
 ################################################
