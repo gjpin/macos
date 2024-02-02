@@ -10,13 +10,15 @@ xcode-select --install
 
 # Add homebrew to the path
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ${HOME}/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Disable brew analytics
 tee ${HOME}/.zshenv << EOF
 # Disable brew analytics
 export HOMEBREW_NO_ANALYTICS=1
 EOF
+
+# Make brew available now
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 ################################################
 ##### Common applications
@@ -42,14 +44,13 @@ brew install \
     wget \
     zstd
 
-# Install windows management tools
-brew install --cask rectangle alt-tab
-
-# Install Google Chrome
-brew install --cask google-chrome
+# Install Brave
 
 # Install Spotify
 brew install --cask spotify
+
+# Install lulu firewall
+brew install --cask lulu
 
 ################################################
 ##### GNU utils
@@ -99,7 +100,7 @@ brew install wireguard-tools
 sudo mkdir /etc/wireguard
 
 # Configure LaunchDaemon for wg0
-sudo tee /Library/LaunchDaemons/com.wireguard.wg0.plist << 'EOF'
+sudo tee /Library/LaunchDaemons/com.wireguard.wg0.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"\>
 <plist version="1.0">
@@ -125,7 +126,7 @@ sudo tee /Library/LaunchDaemons/com.wireguard.wg0.plist << 'EOF'
         <dict>
             <key>PATH</key>
             <!-- Adds in user-specific and Homebrew bin directories to start of PATH -->
-            <string>/Users/slowe/.local/bin:/opt/homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+            <string>/Users/${USER}/.local/bin:/opt/homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
         </dict>
     </dict>
 </plist>
@@ -263,9 +264,6 @@ defaults write com.oliverpeate.Bluesnooze hideIcon -bool true && killall Bluesno
 # https://pawelgrzybek.com/change-macos-user-preferences-via-command-line/
 # https://github.com/pawelgrzybek/dotfiles/blob/master/setup-macos.sh
 
-# Enable Reduce motion
-defaults write com.apple.Accessibility ReduceMotionEnabled -bool true
-
 # Appearance
 defaults write -globalDomain AppleInterfaceStyleSwitchesAutomatically -bool true
 
@@ -281,9 +279,6 @@ defaults write com.apple.Siri VoiceTriggerUserEnabled -bool false
 
 # Tap to click
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
-
-# Show all filename extensions
-defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
 # Show warning before changing an extension
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false

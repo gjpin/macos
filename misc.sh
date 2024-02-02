@@ -1,21 +1,22 @@
 ################################################
-##### GNU utils
+##### System Preferences
 ################################################
 
-# References:
-# https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
+# Show all filename extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
-# Install GNU utils
-brew install autoconf bash binutils coreutils diffutils ed findutils flex gawk \
-    gnu-indent gnu-sed gnu-tar gnu-which gpatch grep gzip less m4 make nano \
-    screen watch wdiff wget zip
+# Enable Reduce motion
+defaults write com.apple.Accessibility ReduceMotionEnabled -bool true
 
-tee ${HOME}/.zshrc.d/gnu-utils << 'EOF'
-HOMEBREW_PREFIX=$(brew --prefix)
-NEWPATH=${PATH}
-for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnubin; do NEWPATH=$d:$NEWPATH; done
-export PATH=$(echo ${NEWPATH} | tr ':' '\n' | cat -n | sort -uk2 | sort -n | cut -f2- | xargs | tr ' ' ':')
-EOF
+################################################
+##### Applications
+################################################
+
+# Install windows management tools
+brew install --cask rectangle alt-tab
+
+# Install Google Chrome
+brew install --cask google-chrome
 
 ################################################
 ##### Yabai
