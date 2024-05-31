@@ -145,19 +145,13 @@ brew install podman
 brew install --cask podman-desktop
 
 # Set Podman VM specs
-podman machine init --cpus 4 --memory 8192
+podman machine init --cpus 6 --memory 16384
 
 ################################################
 ##### zsh
 ################################################
 
-# Install Oh-My-Zsh
-# https://github.com/ohmyzsh/ohmyzsh#manual-installation
-git clone https://github.com/ohmyzsh/ohmyzsh.git ${HOME}/.oh-my-zsh
-
 # Install powerlevel10k zsh theme
-# https://github.com/romkatv/powerlevel10k#oh-my-zsh
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${HOME}/.oh-my-zsh/custom/themes/powerlevel10k
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.p10k.zsh -o ${HOME}/.p10k.zsh
 
 # Import ZSH configs
