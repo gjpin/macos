@@ -50,8 +50,10 @@ bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
-bindkey "^[[1;5C" forward-word
-bindkey "^[[1;5D" backward-word
+bindkey "\e[1;3D" backward-word
+bindkey "\e[1;3C" forward-word
+bindkey "^[[1;9D" beginning-of-line
+bindkey "^[[1;9C" end-of-line
 bindkey "^[[3~" delete-char
 bindkey "^?" backward-delete-char
 
