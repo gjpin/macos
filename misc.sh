@@ -1,4 +1,27 @@
 ################################################
+##### keybindings
+################################################
+
+# Custom key bindings in zsh
+tee ${HOME}/.zshrc.d/keybindings << EOF
+bindkey "[D" backward-word
+bindkey "[C" forward-word
+bindkey "^[a" beginning-of-line
+bindkey "^[e" end-of-line
+EOF
+
+################################################
+##### Podman
+################################################
+
+# Install Podman and Podman desktop
+brew install podman
+brew install --cask podman-desktop
+
+# Set Podman VM specs
+podman machine init --cpus 6 --memory 16384
+
+################################################
 ##### System Preferences
 ################################################
 

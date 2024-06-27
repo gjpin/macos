@@ -137,15 +137,19 @@ sudo launchctl enable system/com.wireguard.wg0
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 
 ################################################
-##### Podman
+##### Docker
 ################################################
 
-# Install Podman and Podman desktop
-brew install podman
-brew install --cask podman-desktop
+# Install Docker
+brew install docker-credential-helper docker
 
-# Set Podman VM specs
-podman machine init --cpus 6 --memory 16384
+# Install Colima
+brew install colima
+
+# Set docker host path
+tee ${HOME}/.zshrc.d/docker << EOF
+export DOCKER_HOST=unix://${HOME}/.colima/default/docker.sock
+EOF
 
 ################################################
 ##### zsh
@@ -175,18 +179,6 @@ alias ks="kubens"
 autoload -Uz compinit
 compinit
 source <(kubectl completion zsh)
-EOF
-
-################################################
-##### keybindings
-################################################
-
-# Custom key bindings in zsh
-tee ${HOME}/.zshrc.d/keybindings << EOF
-bindkey "[D" backward-word
-bindkey "[C" forward-word
-bindkey "^[a" beginning-of-line
-bindkey "^[e" end-of-line
 EOF
 
 ################################################
