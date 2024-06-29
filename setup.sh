@@ -42,9 +42,11 @@ brew install \
     yq \
     jq \
     wget \
-    zstd
+    zstd \
+    iproute2mac
 
 # Install Brave
+brew install --cask brave-browser
 
 # Install Spotify
 brew install --cask spotify
@@ -141,7 +143,7 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 ################################################
 
 # Install Docker
-brew install docker-credential-helper docker
+brew install docker docker-buildx docker-compose docker-credential-helper
 
 # Install Colima
 brew install colima
@@ -151,14 +153,12 @@ tee ${HOME}/.zshrc.d/docker << 'EOF'
 export DOCKER_HOST=unix://${HOME}/.colima/default/docker.sock
 EOF
 
-# Install Docker Compose plugin
-mkdir -p $HOME/.docker/cli-plugins
-curl -SL https://github.com/docker/compose/releases/download/v2.28.1/docker-compose-darwin-aarch64 -o $HOME/.docker/cli-plugins/docker-compose
-chmod +x $HOME/.docker/cli-plugins/docker-compose
+# Configure Docker
+json_data=$(cat "${HOME}/.docker/config.json")
+updated_json=$(echo "$json_data" | jq '. + {cliPluginsExtraDirs: ["/opt/homebrew/lib/docker/cli-plugins"]}')
+echo "$updated_json" > "${HOME}/.docker/config.json"
 
-# Install Docker buildx and set as default builder
-curl -SL https://github.com/docker/buildx/releases/download/v0.15.1/buildx-v0.15.1.darwin-arm64 -o $HOME/.docker/cli-plugins/docker-buildx
-chmod +x $HOME/.docker/cli-plugins/docker-buildx
+# Set buildx as default Docker builder
 docker buildx install
 
 ################################################
