@@ -171,6 +171,15 @@ curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.p10k.zsh -o
 # Import ZSH configs
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.zshrc -o ${HOME}/.zshrc
 
+# Make ZSH globbing compatible with bash
+tee ${HOME}/.zshrc.d/docker << 'EOF'
+# Enable bash-style globbing
+setopt NO_NOMATCH          # Do not raise an error if a glob does not match any files
+setopt GLOB_SUBST          # Perform substitutions in globs
+setopt NO_GLOB_DOTS        # Do not match leading dots with wildcards
+unsetopt EXTENDED_GLOB     # Disable extended globbing
+EOF
+
 ################################################
 ##### Kubernetes
 ################################################
