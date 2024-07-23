@@ -181,7 +181,7 @@ unsetopt EXTENDED_GLOB     # Disable extended globbing
 EOF
 
 ################################################
-##### Kubernetes
+##### Kubernetes / Cloud
 ################################################
 
 # Install Kubernetes tools
@@ -199,6 +199,9 @@ autoload -Uz compinit
 compinit
 source <(kubectl completion zsh)
 EOF
+
+# Install OpenTofu
+brew install opentofu
 
 ################################################
 ##### Visual Studio Code
