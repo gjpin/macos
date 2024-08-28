@@ -1,4 +1,27 @@
 ################################################
+##### Docker
+################################################
+
+# Install Docker
+brew install docker docker-buildx docker-compose docker-credential-helper
+
+# Install Colima
+brew install colima
+
+# Set docker host path
+tee ${HOME}/.zshrc.d/docker << 'EOF'
+export DOCKER_HOST=unix://${HOME}/.colima/default/docker.sock
+EOF
+
+# Configure Docker
+json_data=$(cat "${HOME}/.docker/config.json")
+updated_json=$(echo "$json_data" | jq '. + {cliPluginsExtraDirs: ["/opt/homebrew/lib/docker/cli-plugins"]}')
+echo "$updated_json" > "${HOME}/.docker/config.json"
+
+# Set buildx as default Docker builder
+docker buildx install
+
+################################################
 ##### keybindings
 ################################################
 
@@ -9,17 +32,6 @@ bindkey "[C" forward-word
 bindkey "^[a" beginning-of-line
 bindkey "^[e" end-of-line
 EOF
-
-################################################
-##### Podman
-################################################
-
-# Install Podman and Podman desktop
-brew install podman
-brew install --cask podman-desktop
-
-# Set Podman VM specs
-podman machine init --cpus 6 --memory 16384
 
 ################################################
 ##### System Preferences
@@ -179,3 +191,89 @@ skhd --start-service
 
 # Give Accessibility access and then restart skhd
 skhd --restart-service
+
+################################################
+##### Siri
+################################################
+
+# Disable Ask Siri
+defaults write com.apple.Siri SiriPrefStashedStatusMenuVisible -bool false
+defaults write com.apple.Siri VoiceTriggerUserEnabled -bool false
+
+# Disable Siri Suggestions for specific apps
+defaults write com.apple.suggestions AppStoreEnabled -bool false
+defaults write com.apple.suggestions BooksEnabled -bool false
+defaults write com.apple.suggestions CalendarEnabled -bool false
+defaults write com.apple.suggestions ContactsEnabled -bool false
+defaults write com.apple.suggestions FaceTimeEnabled -bool false
+defaults write com.apple.suggestions FreeformEnabled -bool false
+defaults write com.apple.suggestions HelpViewerEnabled -bool false
+defaults write com.apple.suggestions MailEnabled -bool false
+defaults write com.apple.suggestions MapsEnabled -bool false
+defaults write com.apple.suggestions MessagesEnabled -bool false
+defaults write com.apple.suggestions MicrosoftOutlookEnabled -bool false
+defaults write com.apple.suggestions NotesEnabled -bool false
+defaults write com.apple.suggestions PhotosEnabled -bool false
+defaults write com.apple.suggestions PodcastsEnabled -bool false
+defaults write com.apple.suggestions RemindersEnabled -bool false
+defaults write com.apple.suggestions SafariEnabled -bool false
+defaults write com.apple.suggestions ShortcutsEnabled -bool false
+defaults write com.apple.suggestions StocksEnabled -bool false
+defaults write com.apple.suggestions TipsEnabled -bool false
+defaults write com.apple.suggestions WeatherEnabled -bool false
+
+# Disable Siri Learning for Each Specific Application
+defaults write com.apple.suggestions AppStoreShouldLearn -bool false
+defaults write com.apple.suggestions BooksShouldLearn -bool false
+defaults write com.apple.suggestions CalendarShouldLearn -bool false
+defaults write com.apple.suggestions ContactsShouldLearn -bool false
+defaults write com.apple.suggestions FaceTimeShouldLearn -bool false
+defaults write com.apple.suggestions FreeformShouldLearn -bool false
+defaults write com.apple.suggestions HelpViewerShouldLearn -bool false
+defaults write com.apple.suggestions MailShouldLearn -bool false
+defaults write com.apple.suggestions MapsShouldLearn -bool false
+defaults write com.apple.suggestions MessagesShouldLearn -bool false
+defaults write com.apple.suggestions MicrosoftOutlookShouldLearn -bool false
+defaults write com.apple.suggestions NotesShouldLearn -bool false
+defaults write com.apple.suggestions PhotosShouldLearn -bool false
+defaults write com.apple.suggestions PodcastsShouldLearn -bool false
+defaults write com.apple.suggestions RemindersShouldLearn -bool false
+defaults write com.apple.suggestions SafariShouldLearn -bool false
+defaults write com.apple.suggestions ShortcutsShouldLearn -bool false
+defaults write com.apple.suggestions StocksShouldLearn -bool false
+defaults write com.apple.suggestions TipsShouldLearn -bool false
+defaults write com.apple.suggestions WeatherShouldLearn -bool false
+
+################################################
+##### Spotlight
+################################################
+
+# Disable Spotlight
+sudo mdutil -a -i off
+
+# Configure Spotlight to index only applications and system preferences
+defaults write com.apple.spotlight orderedItems -array \
+    '{"enabled" = 1;"name" = "APPLICATIONS";}' \
+    '{"enabled" = 0;"name" = "MENU_EXPRESSION";}' \
+    '{"enabled" = 0;"name" = "CONTACT";}' \
+    '{"enabled" = 0;"name" = "MENU_CONVERSION";}' \
+    '{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
+    '{"enabled" = 0;"name" = "DOCUMENTS";}' \
+    '{"enabled" = 0;"name" = "EVENT_TODO";}' \
+    '{"enabled" = 0;"name" = "DIRECTORIES";}' \
+    '{"enabled" = 0;"name" = "FONTS";}' \
+    '{"enabled" = 0;"name" = "IMAGES";}' \
+    '{"enabled" = 0;"name" = "MESSAGES";}' \
+    '{"enabled" = 0;"name" = "MOVIES";}' \
+    '{"enabled" = 0;"name" = "MUSIC";}' \
+    '{"enabled" = 0;"name" = "MENU_OTHER";}' \
+    '{"enabled" = 0;"name" = "PDF";}' \
+    '{"enabled" = 0;"name" = "PRESENTATIONS";}' \
+    '{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}' \
+    '{"enabled" = 0;"name" = "SPREADSHEETS";}' \
+    '{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
+    '{"enabled" = 0;"name" = "TIPS";}' \
+    '{"enabled" = 0;"name" = "BOOKMARKS";}'
+
+# Re-enable Spotlight
+sudo mdutil -a -i on

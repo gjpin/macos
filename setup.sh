@@ -146,27 +146,15 @@ sudo launchctl enable system/com.wireguard.wg0
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 
 ################################################
-##### Docker
+##### Podman
 ################################################
 
-# Install Docker
-brew install docker docker-buildx docker-compose docker-credential-helper
+# Install Podman and Podman desktop
+brew install podman
+brew install --cask podman-desktop
 
-# Install Colima
-brew install colima
-
-# Set docker host path
-tee ${HOME}/.zshrc.d/docker << 'EOF'
-export DOCKER_HOST=unix://${HOME}/.colima/default/docker.sock
-EOF
-
-# Configure Docker
-json_data=$(cat "${HOME}/.docker/config.json")
-updated_json=$(echo "$json_data" | jq '. + {cliPluginsExtraDirs: ["/opt/homebrew/lib/docker/cli-plugins"]}')
-echo "$updated_json" > "${HOME}/.docker/config.json"
-
-# Set buildx as default Docker builder
-docker buildx install
+# Set Podman VM specs
+podman machine init --cpus 6 --memory 16384
 
 ################################################
 ##### zsh
@@ -278,10 +266,6 @@ defaults write com.apple.controlcenter "NSStatusItem Visible Bluetooth" -bool tr
 defaults write com.apple.airplay showInMenuBarIfPresent -bool false
 defaults write com.apple.controlcenter "NSStatusItem Visible Sound" -bool true
 defaults -currentHost write com.apple.Spotlight MenuItemHidden -int 1
-
-# Ask Siri
-defaults write com.apple.Siri SiriPrefStashedStatusMenuVisible -bool false
-defaults write com.apple.Siri VoiceTriggerUserEnabled -bool false
 
 # Tap to click
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
