@@ -278,3 +278,8 @@ defaults write com.apple.finder ShowPathbar -bool true
 
 # Disable automatic rearrangement of Spaces based on most recent use
 defaults write com.apple.dock mru-spaces -bool false
+
+# Set tilling shortcuts
+defaults write -g NSUserKeyEquivalents -dict-add "\\033Window\\033Fill" "~^\\U21a9"
+defaults write -g NSUserKeyEquivalents -dict-add "\\033Window\\033Move & Resize\\033Left" "~^\\U2190"
+defaults write -g NSUserKeyEquivalents -dict-add "\\033Window\\033Move & Resize\\033Right" "~^\\U2192"

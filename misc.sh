@@ -1,4 +1,16 @@
 ################################################
+##### Python
+################################################
+
+# Install MiniConda
+curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
+sh Miniconda3-latest-MacOSX-arm64.sh
+rm -f Miniconda3-latest-MacOSX-arm64.sh
+
+# Install PyTorch
+conda install pytorch torchvision torchaudio -c pytorch-nightly
+
+################################################
 ##### Docker
 ################################################
 
