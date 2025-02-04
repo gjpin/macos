@@ -52,6 +52,9 @@ brew install \
     zstd \
     iproute2mac
 
+# Install postgres
+brew install postgresql@17
+
 # Install Brave
 brew install --cask brave-browser
 
