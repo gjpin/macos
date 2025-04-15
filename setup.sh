@@ -53,7 +53,7 @@ brew install \
     iproute2mac
 
 # Install postgres
-brew install postgresql@17
+# brew install postgresql@17
 
 # Install Brave
 brew install --cask brave-browser
@@ -77,9 +77,9 @@ brew install autoconf bash binutils coreutils diffutils ed findutils flex gawk \
 
 tee ${HOME}/.zshrc.d/gnu-utils << 'EOF'
 if type brew &>/dev/null; then
-  NEWPATH=${PATH}
-  for d in /opt/homebrew/opt/*/libexec/gnubin; do NEWPATH=$d:$NEWPATH; done
-  export PATH=$(echo ${NEWPATH} | tr ':' '\n' | cat -n | sort -uk2 | sort -n | cut -f2- | xargs | tr ' ' ':')
+  HOMEBREW_PREFIX=$(brew --prefix)
+  for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnubin; do export PATH=$d:$PATH; done
+  for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnuman; do export MANPATH=$d:$MANPATH; done
 fi
 EOF
 
