@@ -192,6 +192,10 @@ EOF
 # Install OpenTofu
 brew install opentofu
 
+# Install minikube
+brew install minikube vfkit
+minikube config set driver vfkit
+
 ################################################
 ##### Visual Studio Code
 ################################################
