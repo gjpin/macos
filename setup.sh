@@ -195,6 +195,8 @@ brew install opentofu
 # Install minikube
 brew install minikube vfkit
 minikube config set driver vfkit
+minikube config set cpus 4
+minikube config set memory 8192
 
 ################################################
 ##### Visual Studio Code
