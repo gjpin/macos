@@ -52,12 +52,6 @@ brew install \
     zstd \
     iproute2mac
 
-# Install postgres
-# brew install postgresql@17
-
-# Install Brave
-brew install --cask brave-browser
-
 # Install Spotify
 brew install --cask spotify
 
@@ -75,13 +69,23 @@ brew install autoconf bash binutils coreutils diffutils ed findutils flex gawk \
     gnu-indent gnu-sed gnu-tar gnu-which gpatch grep gzip less m4 make nano \
     screen watch wdiff wget zip
 
+# Add GNU utils to path
 tee ${HOME}/.zshrc.d/gnu-utils << 'EOF'
-if type brew &>/dev/null; then
-  HOMEBREW_PREFIX=$(brew --prefix)
-  for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnubin; do export PATH=$d:$PATH; done
-  for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnuman; do export MANPATH=$d:$MANPATH; done
-fi
+# GNU utils — bin
+export PATH="/opt/homebrew/opt/{make,libtool,gsed,grep,gpatch,gnu-which,gnu-tar,gnu-sed,gnu-indent,gawk,findutils,ed,coreutils}/libexec/gnubin:${PATH}"
+
+# GNU utils — manpages
+export MANPATH="/opt/homebrew/opt/{make,libtool,gsed,grep,gpatch,gnu-which,gnu-tar,gnu-sed,gnu-indent,gawk,findutils,ed,coreutils}/libexec/gnuman:${MANPATH}"
 EOF
+
+# Recursively add GNU utils to path
+# tee ${HOME}/.zshrc.d/gnu-utils << 'EOF'
+# if type brew &>/dev/null; then
+#   HOMEBREW_PREFIX=$(brew --prefix)
+#   for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnubin; do export PATH=$d:$PATH; done
+#   for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnuman; do export MANPATH=$d:$MANPATH; done
+# fi
+# EOF
 
 ################################################
 ##### iTerm2
@@ -174,8 +178,8 @@ curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.zshrc -o ${
 ################################################
 
 # Install Kubernetes tools
-brew install kubernetes-cli helm kubectx k9s cilium-cli
-brew install --cask openlens
+brew install kubernetes-cli helm kubectx k9s cilium-cli argocd
+brew install --cask headlamp
 
 tee ${HOME}/.zshrc.d/kubernetes << EOF
 # Aliases
