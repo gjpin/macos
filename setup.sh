@@ -170,6 +170,9 @@ podman machine init --cpus 4 --memory 8192
 ##### zsh
 ################################################
 
+# Update account to use ZSH
+chsh -s /bin/zsh
+
 # Install powerlevel10k zsh theme
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.p10k.zsh -o ${HOME}/.p10k.zsh
 
