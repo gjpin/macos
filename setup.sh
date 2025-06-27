@@ -272,19 +272,19 @@ defaults write com.oliverpeate.Bluesnooze hideIcon -bool true && killall Bluesno
 # https://github.com/pawelgrzybek/dotfiles/blob/master/setup-macos.sh
 
 # Appearance
-defaults write -globalDomain AppleInterfaceStyleSwitchesAutomatically -bool true
+# defaults write -globalDomain AppleInterfaceStyleSwitchesAutomatically -bool true
 
 # Menu Bar
-defaults write com.apple.controlcenter "NSStatusItem Visible Bluetooth" -bool true
-defaults write com.apple.airplay showInMenuBarIfPresent -bool false
-defaults write com.apple.controlcenter "NSStatusItem Visible Sound" -bool true
-defaults -currentHost write com.apple.Spotlight MenuItemHidden -int 1
+# defaults write com.apple.controlcenter "NSStatusItem Visible Bluetooth" -bool true
+# defaults write com.apple.airplay showInMenuBarIfPresent -bool false
+# defaults write com.apple.controlcenter "NSStatusItem Visible Sound" -bool true
+# defaults -currentHost write com.apple.Spotlight MenuItemHidden -int 1
 
 # Tap to click
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
 # Show warning before changing an extension
-defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+# defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
 # Finder > View > Show Path Bar
 defaults write com.apple.finder ShowPathbar -bool true
