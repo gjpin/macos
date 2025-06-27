@@ -220,9 +220,6 @@ curl https://raw.githubusercontent.com/gjpin/macos/main/configs/vscode/settings.
 ##### Fonts
 ################################################
 
-# Add fonts tap
-brew tap homebrew/cask-fonts
-
 # Install fonts
 brew install --cask \
     font-meslo-lg-nerd-font \
