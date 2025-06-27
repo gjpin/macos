@@ -101,8 +101,8 @@ EOF
 brew install --cask iterm2
 
 # Download and import iTerm2 configs
-defaults import com.googlecode.iterm2 ${HOME}/iterm2.plist
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/iterm2/iterm2.plist -o ${HOME}/iterm2.plist
+defaults import com.googlecode.iterm2 ${HOME}/iterm2.plist
 rm -f ${HOME}/iterm2.plist
 
 # Enable TouchID for sudo in iTerm2
