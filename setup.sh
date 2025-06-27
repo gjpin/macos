@@ -58,6 +58,9 @@ brew install --cask spotify
 # Install lulu firewall
 brew install --cask lulu
 
+# Install Brave
+brew install --cask brave-browser
+
 ################################################
 ##### GNU utils
 ################################################
