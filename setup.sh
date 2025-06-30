@@ -50,7 +50,8 @@ brew install \
     jq \
     wget \
     zstd \
-    iproute2mac
+    iproute2mac \
+    fzf
 
 # Install Spotify
 brew install --cask spotify
