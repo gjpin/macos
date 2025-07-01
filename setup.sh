@@ -56,11 +56,14 @@ brew install \
 # Install Spotify
 brew install --cask spotify
 
-# Install lulu firewall
+# Install LuLu firewall
 brew install --cask lulu
 
 # Install Brave
 brew install --cask brave-browser
+
+# Install Obsidian
+brew install --cask obsidian
 
 ################################################
 ##### GNU utils
