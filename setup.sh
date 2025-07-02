@@ -184,6 +184,16 @@ curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.p10k.zsh -o
 # Import ZSH configs
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.zshrc -o ${HOME}/.zshrc
 
+# Add ~/.local/bin to the path
+tee ${HOME}/.zshrc.d/local-bin << 'EOF'
+# User specific environment
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
+then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
+EOF
+
 ################################################
 ##### Kubernetes / Cloud
 ################################################
