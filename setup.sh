@@ -51,7 +51,8 @@ brew install \
     wget \
     zstd \
     iproute2mac \
-    fzf
+    fzf \
+    pipx
 
 # Install Spotify
 brew install --cask spotify
