@@ -67,6 +67,10 @@ brew install --cask brave-browser
 # Install Obsidian
 brew install --cask obsidian
 
+# Install 3D printing software
+brew install --cask orcaslicer
+brew install --cask freecad
+
 ################################################
 ##### Firewall
 ################################################
