@@ -72,6 +72,19 @@ brew install --cask orcaslicer
 brew install --cask freecad
 
 ################################################
+##### SSH
+################################################
+
+mkdir -p ${HOME}/.ssh
+
+tee ${HOME}/.ssh/config << 'EOF'
+Host *
+  UseKeychain yes
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_ecdsa
+EOF
+
+################################################
 ##### Firewall
 ################################################
 
