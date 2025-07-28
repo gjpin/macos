@@ -94,9 +94,6 @@ sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setblockall on
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned off
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
 
-# Install LuLu
-brew install --cask lulu
-
 ################################################
 ##### Syncthing
 ################################################
@@ -324,3 +321,10 @@ defaults write com.apple.finder ShowPathbar -bool true
 
 # Disable automatic rearrangement of Spaces based on most recent use
 defaults write com.apple.dock mru-spaces -bool false
+
+################################################
+##### FDE
+################################################
+
+# enable FileVault
+sudo fdesetup enable
