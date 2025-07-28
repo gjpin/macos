@@ -26,7 +26,6 @@
     },
     "editor.fontSize": 14,
     "update.showReleaseNotes": false,
-    "terminal.integrated.fontSize": 14,
-    "workbench.colorTheme": "Default Dark+"
+    "terminal.integrated.fontSize": 14
   }
   

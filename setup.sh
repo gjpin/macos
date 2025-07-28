@@ -27,6 +27,10 @@ EOF
 # Make brew available now
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+# Fix brew permissions
+sudo chown -R $USER /opt/homebrew/var/log
+chmod u+w /opt/homebrew/var/log
+
 ################################################
 ##### Common applications
 ################################################
@@ -57,14 +61,34 @@ brew install \
 # Install Spotify
 brew install --cask spotify
 
-# Install LuLu firewall
-brew install --cask lulu
-
 # Install Brave
 brew install --cask brave-browser
 
 # Install Obsidian
 brew install --cask obsidian
+
+################################################
+##### Firewall
+################################################
+
+# Enable MacOS firewall
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setblockall on
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned off
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+
+# Install LuLu
+brew install --cask lulu
+
+################################################
+##### Syncthing
+################################################
+
+# Install syncthing
+brew install syncthing
+
+# Automatically start syncthing
+brew services start syncthing
 
 ################################################
 ##### GNU utils
@@ -86,15 +110,6 @@ export PATH="/opt/homebrew/opt/{make,libtool,gsed,grep,gpatch,gnu-which,gnu-tar,
 export MANPATH="/opt/homebrew/opt/{make,libtool,gsed,grep,gpatch,gnu-which,gnu-tar,gnu-sed,gnu-indent,gawk,findutils,ed,coreutils}/libexec/gnuman:${MANPATH}"
 EOF
 
-# Recursively add GNU utils to path
-# tee ${HOME}/.zshrc.d/gnu-utils << 'EOF'
-# if type brew &>/dev/null; then
-#   HOMEBREW_PREFIX=$(brew --prefix)
-#   for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnubin; do export PATH=$d:$PATH; done
-#   for d in ${HOMEBREW_PREFIX}/opt/*/libexec/gnuman; do export MANPATH=$d:$MANPATH; done
-# fi
-# EOF
-
 ################################################
 ##### iTerm2
 ################################################
@@ -104,11 +119,6 @@ EOF
 
 # Install iTerm2
 brew install --cask iterm2
-
-# Download and import iTerm2 configs
-# curl https://raw.githubusercontent.com/gjpin/macos/main/configs/iterm2/com.googlecode.iterm2.plist -o ${HOME}/com.googlecode.iterm2.plist
-# defaults import com.googlecode.iterm2 ${HOME}/com.googlecode.iterm2.plist
-# rm -f ${HOME}/com.googlecode.iterm2.plist
 
 # Enable TouchID for sudo in iTerm2
 sudo gsed -i '1 a auth       sufficient     pam_tid.so' /etc/pam.d/sudo
