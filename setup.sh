@@ -71,6 +71,9 @@ brew install --cask obsidian
 brew install --cask orcaslicer
 brew install --cask freecad
 
+# Install Moonlight
+brew install --cask moonlight
+
 ################################################
 ##### SSH
 ################################################
