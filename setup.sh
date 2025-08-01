@@ -77,6 +77,9 @@ brew install --cask moonlight
 # Install Discord
 brew install --cask discord
 
+# Install Thunderbird
+brew install --cask thunderbird
+
 ################################################
 ##### SSH
 ################################################
