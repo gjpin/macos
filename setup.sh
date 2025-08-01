@@ -74,6 +74,9 @@ brew install --cask freecad
 # Install Moonlight
 brew install --cask moonlight
 
+# Install Discord
+brew install --cask discord
+
 ################################################
 ##### SSH
 ################################################
