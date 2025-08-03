@@ -80,6 +80,9 @@ brew install --cask discord
 # Install Thunderbird
 brew install --cask thunderbird
 
+# Install Bitwarden
+brew install --cask bitwarden
+
 ################################################
 ##### SSH
 ################################################
