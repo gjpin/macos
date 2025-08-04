@@ -56,31 +56,18 @@ brew install \
     zstd \
     iproute2mac \
     fzf \
-    pipx
+    pipx \
+    sops
 
-# Install Spotify
+# Install casks
 brew install --cask spotify
-
-# Install Brave
 brew install --cask brave-browser
-
-# Install Obsidian
 brew install --cask obsidian
-
-# Install 3D printing software
 brew install --cask orcaslicer
 brew install --cask freecad
-
-# Install Moonlight
 brew install --cask moonlight
-
-# Install Discord
 brew install --cask discord
-
-# Install Thunderbird
 brew install --cask thunderbird
-
-# Install Bitwarden
 brew install --cask bitwarden
 
 ################################################
