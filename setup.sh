@@ -57,7 +57,8 @@ brew install \
     iproute2mac \
     fzf \
     pipx \
-    sops
+    sops \
+    age
 
 # Install casks
 brew install --cask spotify
