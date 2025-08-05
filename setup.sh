@@ -56,9 +56,7 @@ brew install \
     zstd \
     iproute2mac \
     fzf \
-    pipx \
-    sops \
-    age
+    pipx
 
 # Install casks
 brew install --cask spotify
@@ -70,6 +68,47 @@ brew install --cask moonlight
 brew install --cask discord
 brew install --cask thunderbird
 brew install --cask bitwarden
+
+################################################
+##### SOPS
+################################################
+
+# References:
+# https://github.com/getsops/sops
+# https://github.com/FiloSottile/age
+
+# Install SOPS and age
+brew install \
+    sops \
+    age
+
+# Create SOPS directory
+mkdir ${HOME}/.sops
+
+# Add SOPS key file to env
+tee ${HOME}/.zshrc.d/sops << 'EOF'
+export SOPS_AGE_KEY_FILE=$HOME/.sops/key.txt
+EOF
+
+# Encryption helpers
+# https://dev.to/docteurrs/goodbye-sealed-secrets-hello-sops-1ken
+
+tee -a ${HOME}/.zshrc.d/sops << 'EOF'
+
+function encrypt_file {
+    filename=$(basename -- "$1")
+    extension="${filename##*.}"
+    filename="${filename%.*}"
+    sops encrypt --age $(cat ~/.sops/key.txt |grep -oP "public key: \K(.*)") $2 $3 $1 > "$filename.enc.$extension"
+}
+
+function encrypt_file_inplace {
+    sops encrypt --in-place --age $(cat ~/.sops/key.txt |grep -oP "public key: \K(.*)") $2 $3 $1
+}
+EOF
+
+# Generate SOPS key
+# age-keygen -o ${HOME}/.sops/key.txt
 
 ################################################
 ##### SSH
@@ -118,10 +157,16 @@ brew install autoconf bash binutils coreutils diffutils ed findutils flex gawk \
 # Add GNU utils to path
 tee ${HOME}/.zshrc.d/gnu-utils << 'EOF'
 # GNU utils — bin
-export PATH="/opt/homebrew/opt/{make,libtool,gsed,grep,gpatch,gnu-which,gnu-tar,gnu-sed,gnu-indent,gawk,findutils,ed,coreutils}/libexec/gnubin:${PATH}"
+for pkg in make libtool gsed grep gpatch gnu-which gnu-tar gnu-sed gnu-indent gawk findutils ed coreutils; do
+  PATH="/opt/homebrew/opt/$pkg/libexec/gnubin:$PATH"
+done
+export PATH
 
 # GNU utils — manpages
-export MANPATH="/opt/homebrew/opt/{make,libtool,gsed,grep,gpatch,gnu-which,gnu-tar,gnu-sed,gnu-indent,gawk,findutils,ed,coreutils}/libexec/gnuman:${MANPATH}"
+for pkg in make libtool gsed grep gpatch gnu-which gnu-tar gnu-sed gnu-indent gawk findutils ed coreutils; do
+  PATH="/opt/homebrew/opt/$pkg/libexec/gnuman:$PATH"
+done
+export MANPATH
 EOF
 
 ################################################
