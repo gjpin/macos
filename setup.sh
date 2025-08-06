@@ -56,7 +56,8 @@ brew install \
     zstd \
     iproute2mac \
     fzf \
-    pipx
+    pipx \
+    jsonnet
 
 # Install casks
 brew install --cask spotify
