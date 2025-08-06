@@ -245,9 +245,6 @@ podman machine init --cpus 4 --memory 8192
 ##### zsh
 ################################################
 
-# Update account to use ZSH
-chsh -s /bin/zsh
-
 # Install powerlevel10k zsh theme
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.p10k.zsh -o ${HOME}/.p10k.zsh
 
@@ -369,8 +366,8 @@ defaults write com.apple.finder ShowPathbar -bool true
 defaults write com.apple.dock mru-spaces -bool false
 
 ################################################
-##### FDE
+##### Full Disk Encryption
 ################################################
 
-# enable FileVault
+# Enable FileVault
 sudo fdesetup enable
