@@ -70,6 +70,9 @@ brew install --cask discord
 brew install --cask thunderbird
 brew install --cask bitwarden
 
+# Languages
+brew install go
+
 ################################################
 ##### SOPS
 ################################################
