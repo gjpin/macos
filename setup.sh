@@ -374,3 +374,28 @@ defaults write com.apple.dock mru-spaces -bool false
 
 # Enable FileVault
 sudo fdesetup enable
+
+################################################
+##### LLM
+################################################
+
+# Install huggingface CLI
+brew install huggingface-cli
+
+# Install llama.cpp
+brew install llama.cpp
+
+# Create directory for LLM models
+mkdir -p $HOME/llm
+
+# Download Devstral 1.1 (25-07)
+# https://huggingface.co/unsloth/Devstral-Small-2507-GGUF
+hf download \
+"mistralai/Devstral-Small-2507_gguf" \
+--include "Devstral-Small-2507-Q4_K_M.gguf" \
+--local-dir "$HOME/llm"
+
+# Configure aliases
+tee -a ${HOME}/.zshrc.d/llm << 'EOF'
+alias devstral="llama-server -m $HOME/llm/Devstral-Small-2507-Q4_K_M.gguf --ctx-size 32768 --jinja --flash-attn --cache-type-k q4_0 --cache-type-v q4_0"
+EOF
