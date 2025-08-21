@@ -70,8 +70,11 @@ brew install --cask discord
 brew install --cask thunderbird
 brew install --cask bitwarden
 
-# Languages
+# Install golang
 brew install go
+tee ${HOME}/.zshrc.d/go << EOF
+PATH="$(go env GOPATH)/bin:\$PATH"
+EOF
 
 ################################################
 ##### SOPS
