@@ -69,6 +69,7 @@ brew install --cask moonlight
 brew install --cask discord
 brew install --cask thunderbird
 brew install --cask bitwarden
+brew install --cask lulu
 
 # Install golang
 brew install go

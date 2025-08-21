@@ -81,9 +81,6 @@ brew install --cask rectangle alt-tab
 # Install Google Chrome
 brew install --cask google-chrome
 
-# Install LuLu
-brew install --cask lulu
-
 ################################################
 ##### Yabai
 ################################################
