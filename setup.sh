@@ -77,6 +77,12 @@ tee ${HOME}/.zshrc.d/go << EOF
 PATH="$(go env GOPATH)/bin:\$PATH"
 EOF
 
+# Install dotnet
+brew install dotnet@8
+tee ${HOME}/.zshrc.d/dotnet << 'EOF'
+PATH="/opt/homebrew/opt/dotnet@8/bin:$PATH"
+EOF
+
 ################################################
 ##### SOPS
 ################################################
