@@ -83,6 +83,13 @@ tee ${HOME}/.zshrc.d/dotnet << 'EOF'
 PATH="/opt/homebrew/opt/dotnet@8/bin:$PATH"
 EOF
 
+# Install Temurin JDK
+brew install --cask temurin
+
+# Install Android tools
+brew install --cask android-commandlinetools
+brew install --cask android-platform-tools
+
 ################################################
 ##### SOPS
 ################################################
