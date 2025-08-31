@@ -19,7 +19,9 @@
 
 # Local LLM + Cline example setup
 LM Studio
-- Download Qwen3-Coder-30B-A3B-Instruct-MLX-4bit
+- Download models:
+   - Qwen3-Coder-30B-A3B-Instruct-MLX-4bit
+   - Devstral-Small-2507-MLX-4bit
 - Developer -> Load
    - Context Length: 262144
    - KV Cache Quantization: disabled
