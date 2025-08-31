@@ -16,3 +16,19 @@
       * Font: MesloLGS Nerd Font Mono, 14
    * Advanced:
       * Scroll wheel sends arrow keys when in alternate screen mode: yes
+
+# Local LLM + Cline example setup
+LM Studio
+- Download Qwen3-Coder-30B-A3B-Instruct-MLX-4bit
+- Developer -> Load
+   - Context Length: 262144
+   - KV Cache Quantization: disabled
+- Load model
+- Status: running
+
+Cline
+- Provider: LM Studio
+- Model: qwen/qwen3-coder-30b
+- Custom base URL: disabled
+- Context window: 262144
+- Use compact prompt: enabled

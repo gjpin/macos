@@ -22,6 +22,9 @@ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ${HOME}/.zprofile
 tee ${HOME}/.zshenv << EOF
 # Disable brew analytics
 export HOMEBREW_NO_ANALYTICS=1
+
+# Disable brew update hint
+export HOMEBREW_NO_ENV_HINTS=1
 EOF
 
 # Make brew available now
@@ -89,6 +92,12 @@ brew install --cask temurin
 # Install Android tools
 brew install --cask android-commandlinetools
 brew install --cask android-platform-tools
+
+# Install Deno
+brew install deno
+
+# Install pnpm
+brew install pnpm
 
 ################################################
 ##### SOPS
@@ -321,6 +330,12 @@ brew install --cask visual-studio-code
 mkdir -p "${HOME}/Library/Application Support/Code/User"
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/vscode/settings.json -o "${HOME}/Library/Application Support/Code/User/settings.json"
 
+# Install extensions
+code --install-extension saoudrizwan.claude-dev
+code --install-extension kilocode.kilo-code
+code --install-extension golang.go
+code --install-extension denoland.vscode-deno
+
 ################################################
 ##### Fonts
 ################################################
@@ -416,3 +431,6 @@ hf download \
 tee -a ${HOME}/.zshrc.d/llm << 'EOF'
 alias devstral="llama-server -m $HOME/llm/Devstral-Small-2507-Q4_K_M.gguf --ctx-size 32768 --jinja --flash-attn --cache-type-k q4_0 --cache-type-v q4_0"
 EOF
+
+# Install LM Studio
+brew install --cask lm-studio
