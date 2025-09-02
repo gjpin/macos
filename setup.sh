@@ -94,10 +94,10 @@ brew install --cask android-commandlinetools
 brew install --cask android-platform-tools
 
 # Install Deno
-brew install deno
+# brew install deno
 
-# Install pnpm
-brew install pnpm
+# Install node and pnpm
+# brew install node pnpm
 
 ################################################
 ##### SOPS
@@ -334,7 +334,7 @@ curl https://raw.githubusercontent.com/gjpin/macos/main/configs/vscode/settings.
 code --install-extension saoudrizwan.claude-dev
 code --install-extension kilocode.kilo-code
 code --install-extension golang.go
-code --install-extension denoland.vscode-deno
+code --install-extension ms-vscode-remote.remote-containers
 
 ################################################
 ##### Fonts
