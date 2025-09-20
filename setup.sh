@@ -408,7 +408,7 @@ defaults write com.apple.dock mru-spaces -bool false
 sudo fdesetup enable
 
 ################################################
-##### LLM
+##### AI
 ################################################
 
 # Install huggingface CLI
@@ -434,3 +434,6 @@ EOF
 
 # Install LM Studio
 brew install --cask lm-studio
+
+# Install ComfyUI
+brew install --cask comfyui
