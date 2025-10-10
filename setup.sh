@@ -264,7 +264,7 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 ################################################
 
 # Install Podman and Podman desktop
-brew install podman
+brew install podman podman-compose
 brew install --cask podman-desktop
 
 # Set Podman VM specs
