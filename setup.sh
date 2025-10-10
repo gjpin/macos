@@ -72,7 +72,8 @@ brew install --cask moonlight
 brew install --cask discord
 brew install --cask thunderbird
 brew install --cask bitwarden
-brew install --cask lulu
+brew install --cask orbstack
+# brew install --cask lulu
 
 # Install golang
 brew install go
@@ -96,8 +97,9 @@ brew install --cask android-platform-tools
 # Install Deno
 # brew install deno
 
-# Install node and pnpm
-# brew install node pnpm
+# Install node
+brew install node npm pnpm
+npm install -g mcp-remote
 
 ################################################
 ##### SOPS
@@ -264,11 +266,11 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 ################################################
 
 # Install Podman and Podman desktop
-brew install podman podman-compose
-brew install --cask podman-desktop
+# brew install podman podman-compose
+# brew install --cask podman-desktop
 
 # Set Podman VM specs
-podman machine init --cpus 4 --memory 8192
+# podman machine init --cpus 4 --memory 8192
 
 ################################################
 ##### zsh
