@@ -422,18 +422,28 @@ mkdir -p $HOME/llm
 
 # Download Devstral 1.1 (25-07)
 # https://huggingface.co/unsloth/Devstral-Small-2507-GGUF
+# https://docs.unsloth.ai/models/tutorials-how-to-fine-tune-and-run-llms/devstral-how-to-run-and-fine-tune
 hf download \
-"mistralai/Devstral-Small-2507_gguf" \
---include "Devstral-Small-2507-Q4_K_M.gguf" \
+"unsloth/Devstral-Small-2507-GGUF" \
+--include "Devstral-Small-2507-UD-Q4_K_XL.gguf" \
+--local-dir "$HOME/llm"
+
+# Download Qwen3 Coder
+# https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF
+# https://docs.unsloth.ai/models/qwen3-coder-how-to-run-locally#llama.cpp-run-qwen3-coder-30b-a3b-instruct-tutorial
+hf download \
+"unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF" \
+--include "Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf" \
 --local-dir "$HOME/llm"
 
 # Configure aliases
-tee -a ${HOME}/.zshrc.d/llm << 'EOF'
-alias devstral="llama-server -m $HOME/llm/Devstral-Small-2507-Q4_K_M.gguf --ctx-size 32768 --jinja --flash-attn --cache-type-k q4_0 --cache-type-v q4_0"
+tee ${HOME}/.zshrc.d/llm << 'EOF'
+alias devstral="llama-server -m $HOME/llm/Devstral-Small-2507-UD-Q4_K_XL.gguf --jinja -ngl 99 --threads -1 --ctx-size 32684 --temp 0.15 --min-p 0.01 --top-p 0.95 --top-k 64 --repeat-penalty 1.0 --cache-type-k q8_0"
+alias qwen="llama-server -m $HOME/llm/Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf --jinja -ngl 99 --threads -1 --ctx-size 32684 --temp 0.7 --min-p 0.0 --top-p 0.80 --top-k 20 --repeat-penalty 1.05  --cache-type-k q8_0"
 EOF
 
 # Install LM Studio
-brew install --cask lm-studio
+# brew install --cask lm-studio
 
 # Install ComfyUI
-brew install --cask comfyui
+# brew install --cask comfyui
