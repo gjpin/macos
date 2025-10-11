@@ -448,9 +448,9 @@ hf download \
 
 # Configure aliases
 tee ${HOME}/.zshrc.d/llm << 'EOF'
-alias devstral="llama-server -m $HOME/llm/Devstral-Small-2507-UD-Q4_K_XL.gguf --jinja -ngl 99 --threads -1 --ctx-size 32684 --temp 0.15 --min-p 0.01 --top-p 0.95 --top-k 64 --repeat-penalty 1.0 --cache-type-k q8_0"
-alias qwen="llama-server -m $HOME/llm/Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf --jinja -ngl 99 --threads -1 --ctx-size 32684 --temp 0.7 --min-p 0.0 --top-p 0.80 --top-k 20 --repeat-penalty 1.05"
-alias gpt="llama-server -m $HOME/llm/gpt-oss-20b-F16.gguf --jinja -ngl 99 --threads -1 --ctx-size 32684 --temp 1.0 --top-p 1.0 --top-k 0"
+alias devstral="llama-server -m $HOME/llm/Devstral-Small-2507-UD-Q4_K_XL.gguf --jinja -ngl 99 --threads -5 --ctx-size 32684 --temp 0.15 --min-p 0.01 --top-p 0.95 --top-k 64 --repeat-penalty 1.0 --cache-type-k q8_0"
+alias qwen="llama-server -m $HOME/llm/Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf --jinja -ngl 99 --threads -5 --ctx-size 32684 --temp 0.7 --min-p 0.0 --top-p 0.80 --top-k 20 --repeat-penalty 1.05"
+alias gpt="llama-server -m $HOME/llm/gpt-oss-20b-F16.gguf --jinja -ngl 99 --threads -5 --ctx-size 32684 --temp 1.0 --top-p 1.0 --top-k 0"
 EOF
 
 # Install LM Studio
