@@ -420,7 +420,7 @@ brew install --cask sidequest
 brew install --cask meta-quest-developer-hub
 
 # Meta Quest remote desktop app
-# https://www.oculus.com/download_app/?id=7248432555245552
+# https://www.meta.com/help/quest/1370025034331518/
 
 ################################################
 ##### AI
