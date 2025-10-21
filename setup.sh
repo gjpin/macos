@@ -410,6 +410,19 @@ defaults write com.apple.dock mru-spaces -bool false
 sudo fdesetup enable
 
 ################################################
+##### VR
+################################################
+
+# Install sidequest
+brew install --cask sidequest
+
+# Install Meta Quest Developer Hub for Mac
+brew install --cask meta-quest-developer-hub
+
+# Meta Quest remote desktop app
+# https://www.oculus.com/download_app/?id=7248432555245552
+
+################################################
 ##### AI
 ################################################
 
