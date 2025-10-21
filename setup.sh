@@ -423,6 +423,29 @@ brew install --cask meta-quest-developer-hub
 # https://www.meta.com/help/quest/1370025034331518/
 
 ################################################
+##### Gaming
+################################################
+
+# Install Heroic Games Launcher
+brew install --cask heroic
+
+################################################
+##### Game Dev
+################################################
+
+# Install scons
+brew install scons
+
+# Install Vulkan tools and SDK
+brew install vulkan-tools
+
+# Install Material Maker
+brew install --cask material-maker
+
+# Install Blender
+brew install --cask blender
+
+################################################
 ##### AI
 ################################################
 
