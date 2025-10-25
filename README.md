@@ -9,6 +9,9 @@
    * Mission Control -> Mission Control: option + tab
 5. UX improvements:
    * Desktop & Dock -> Hot Corners -> top left : Mission Control
+6. Battery behaviour:
+   * Battery -> Options -> Prevent automatic sleeping on power adapter when the display is off
+   * Battery -> Low Power Mode -> Only on battery
 7. iTerm2:
    * Appearance -> Theme -> Minimal
    * Profiles -> Colors:
@@ -19,20 +22,11 @@
    * Advanced:
       * Scroll wheel sends arrow keys when in alternate screen mode: yes
 
-# Local LLM + Cline example setup
-LM Studio
-- Download models:
-   - Qwen3-Coder-30B-A3B-Instruct-MLX-4bit
-   - Devstral-Small-2507-MLX-4bit
-- Developer -> Load
-   - Context Length: 262144
-   - KV Cache Quantization: disabled
-- Load model
-- Status: running
-
-Cline
-- Provider: LM Studio
-- Model: qwen/qwen3-coder-30b
-- Custom base URL: disabled
-- Context window: 262144
-- Use compact prompt: enabled
+# Tips
+## Remove lingering login items and others
+- Check directories:
+   - /Library/LaunchDaemons
+   - ~/Library/LaunchAgents
+   - ~/Library/Application Support
+   - ~/Library/Preferences
+   - ~/Library/Caches

@@ -72,7 +72,6 @@ brew install --cask moonlight
 brew install --cask discord
 brew install --cask thunderbird
 brew install --cask bitwarden
-brew install --cask orbstack
 # brew install --cask lulu
 
 # Install golang
@@ -320,6 +319,72 @@ brew install minikube vfkit
 minikube config set driver vfkit
 minikube config set cpus 4
 minikube config set memory 8192
+
+################################################
+##### Docker (Lima)
+################################################
+
+# References:
+# https://lima-vm.io/docs/examples/containers/docker/
+# https://naomiaro.hashnode.dev/replacing-docker-desktop-with-lima-on-mac-os
+
+# Install Docker
+brew install docker docker-buildx docker-compose docker-credential-helper
+
+# Install Lima
+brew install lima
+
+# Create and configure Docker profile
+limactl create --name=docker template://docker
+limactl edit docker --cpus 4
+limactl edit docker --memory 16
+
+# Set Docker host path
+tee ${HOME}/.zshrc.d/docker << 'EOF'
+export DOCKER_HOST=$(limactl list docker --format 'unix://{{.Dir}}/sock/docker.sock')
+EOF
+
+# Configure Docker
+json_data=$(cat "${HOME}/.docker/config.json")
+updated_json=$(echo "$json_data" | jq '. + {cliPluginsExtraDirs: ["/opt/homebrew/lib/docker/cli-plugins"]}')
+echo "$updated_json" > "${HOME}/.docker/config.json"
+
+# Set buildx as default Docker builder
+docker buildx install
+
+# Autostart Lima with Docker profile
+tee ${HOME}/Library/LaunchAgents/io.lima.docker.plist << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" \
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>io.lima.docker</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/limactl</string>
+    <string>start</string>
+    <string>docker</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <false/>
+
+  <key>StandardErrorPath</key>
+  <string>${HOME}/Library/Logs/io.lima.docker.err</string>
+
+  <key>StandardOutPath</key>
+  <string>${HOME}/Library/Logs/io.lima.docker.out</string>
+</dict>
+</plist>
+EOF
+
+launchctl load ${HOME}/Library/LaunchAgents/io.lima.docker.plist
 
 ################################################
 ##### Visual Studio Code

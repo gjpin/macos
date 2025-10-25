@@ -27,7 +27,7 @@ rm -f Miniconda3-latest-MacOSX-arm64.sh
 conda install pytorch torchvision torchaudio -c pytorch-nightly
 
 ################################################
-##### Docker
+##### Docker (colima)
 ################################################
 
 # Install Docker
@@ -80,6 +80,9 @@ brew install --cask rectangle alt-tab
 
 # Install Google Chrome
 brew install --cask google-chrome
+
+# Install OrbStack (docker)
+brew install --cask orbstack
 
 ################################################
 ##### Yabai
