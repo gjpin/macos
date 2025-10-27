@@ -340,8 +340,8 @@ limactl edit docker --cpus 4
 limactl edit docker --memory 16
 
 # Set Docker host path
-tee ${HOME}/.zshrc.d/docker << 'EOF'
-export DOCKER_HOST=$(limactl list docker --format 'unix://{{.Dir}}/sock/docker.sock')
+tee ${HOME}/.zshrc.d/docker << EOF
+export DOCKER_HOST=$(limactl list docker --format unix:///Users/${USER}/.lima/docker/sock/docker.sock)
 EOF
 
 # Configure Docker
