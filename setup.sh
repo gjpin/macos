@@ -511,7 +511,7 @@ brew install --cask material-maker
 brew install --cask blender
 
 ################################################
-##### AI
+##### LLM models
 ################################################
 
 # Install huggingface CLI
@@ -554,8 +554,14 @@ alias qwen="llama-server -m $HOME/llm/Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gg
 alias gpt="llama-server -m $HOME/llm/gpt-oss-20b-F16.gguf --jinja -ngl 99 --threads -5 --ctx-size 32684 --temp 1.0 --top-p 1.0 --top-k 0"
 EOF
 
-# Install LM Studio
-# brew install --cask lm-studio
+################################################
+##### AI development
+################################################
 
-# Install ComfyUI
-# brew install --cask comfyui
+# Install specify
+# https://github.com/github/spec-kit
+brew install specify
+
+# Install opencode
+# https://github.com/sst/opencode
+brew install opencode
