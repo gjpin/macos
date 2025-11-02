@@ -3,9 +3,9 @@
 2. Add Wireguard config file to /etc/wireguard/wg0.conf
 3. Run setup.sh
 4. Keyboard shortcuts:
-   * Windows -> General -> Fill: ctrl + fn + enter
-   * Windows -> Halves -> Tile Left Half: ctrl + fn +left arrow
-   * Windows -> Halves -> Tile Right Half: ctrl + fn + right arrow
+   * Windows -> General -> Fill: ctrl + option + enter
+   * Windows -> Halves -> Tile Left Half: ctrl + option + left arrow
+   * Windows -> Halves -> Tile Right Half: ctrl + option + right arrow
    * Mission Control -> Mission Control: option + tab
 5. UX improvements:
    * Desktop & Dock -> Hot Corners -> top left : Mission Control
