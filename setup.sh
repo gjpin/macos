@@ -74,6 +74,13 @@ brew install --cask thunderbird
 brew install --cask bitwarden
 # brew install --cask lulu
 
+# NTFS support
+# https://mounty.app/#installation
+# General -> login items & extensions -> Benjamin Fleischer
+# brew install --cask macfuse
+# brew install gromgit/fuse/ntfs-3g-mac
+# brew install --cask mounty
+
 # Install golang
 brew install go
 tee ${HOME}/.zshrc.d/go << EOF
@@ -94,11 +101,24 @@ brew install --cask android-commandlinetools
 brew install --cask android-platform-tools
 
 # Install Deno
-# brew install deno
+brew install deno
 
 # Install node
 brew install node npm pnpm
 npm install -g mcp-remote
+
+# Updater helper
+sudo tee /usr/local/bin/update-all << EOF
+#!/opt/homebrew/bin/bash
+
+# Update brew packages
+brew update
+
+# Update global NPM packages
+npm update -g
+EOF
+
+sudo chmod +x /usr/local/bin/update-all
 
 ################################################
 ##### SOPS
@@ -352,39 +372,11 @@ echo "$updated_json" > "${HOME}/.docker/config.json"
 # Set buildx as default Docker builder
 docker buildx install
 
+# Make ~ writable by Lima
+sed -i '/mounts:/a \- location: "/Users/'"$USER"'"\n  writable: true\n' ~/.lima/docker/lima.yaml
+
 # Autostart Lima with Docker profile
-tee ${HOME}/Library/LaunchAgents/io.lima.docker.plist << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" \
-"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key>
-  <string>io.lima.docker</string>
-
-  <key>ProgramArguments</key>
-  <array>
-    <string>/opt/homebrew/bin/limactl</string>
-    <string>start</string>
-    <string>docker</string>
-  </array>
-
-  <key>RunAtLoad</key>
-  <true/>
-
-  <key>KeepAlive</key>
-  <false/>
-
-  <key>StandardErrorPath</key>
-  <string>${HOME}/Library/Logs/io.lima.docker.err</string>
-
-  <key>StandardOutPath</key>
-  <string>${HOME}/Library/Logs/io.lima.docker.out</string>
-</dict>
-</plist>
-EOF
-
-launchctl load ${HOME}/Library/LaunchAgents/io.lima.docker.plist
+limactl start-at-login docker --enabled
 
 ################################################
 ##### Visual Studio Code
@@ -558,6 +550,14 @@ EOF
 ##### AI development
 ################################################
 
+# qdrant (vectorial database)
+docker run -d \
+  --name qdrant \
+  --restart=always \
+  -p 6333:6333 \
+  -v /Users/$USER/Documents/qdrant:/qdrant/storage \
+  qdrant/qdrant
+
 # Install specify
 # https://github.com/github/spec-kit
 brew install specify
@@ -565,3 +565,7 @@ brew install specify
 # Install opencode
 # https://github.com/sst/opencode
 brew install opencode
+
+# Install openspec
+# https://github.com/Fission-AI/OpenSpec
+npm install -g @fission-ai/openspec@latest

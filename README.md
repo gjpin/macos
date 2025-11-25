@@ -27,6 +27,6 @@
 - Check directories:
    - /Library/LaunchDaemons
    - ~/Library/LaunchAgents
-   - ~/Library/Application Support
+   - ~/Library/Application\ Support
    - ~/Library/Preferences
    - ~/Library/Caches
