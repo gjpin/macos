@@ -379,6 +379,17 @@ sed -i '/mounts:/a \- location: "/Users/'"$USER"'"\n  writable: true\n' ~/.lima/
 limactl start-at-login docker --enabled
 
 ################################################
+##### Zed
+################################################
+
+# Install Zed
+brew install --cask zed
+
+# Configure Zed
+mkdir -p ${HOME}/.config/zed
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zed/settings.json -o ${HOME}/.config/zed/settings.json
+
+################################################
 ##### Visual Studio Code
 ################################################
 
@@ -515,12 +526,12 @@ brew install llama.cpp
 # Create directory for LLM models
 mkdir -p $HOME/llm
 
-# Download Devstral 1.1 (25-07)
-# https://huggingface.co/unsloth/Devstral-Small-2507-GGUF
-# https://docs.unsloth.ai/models/tutorials-how-to-fine-tune-and-run-llms/devstral-how-to-run-and-fine-tune
+# Download Devstral 2 (25-12)
+# https://huggingface.co/unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF
+# https://unsloth.ai/docs/models/devstral-2
 hf download \
-"unsloth/Devstral-Small-2507-GGUF" \
---include "Devstral-Small-2507-UD-Q4_K_XL.gguf" \
+"unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF" \
+--include "Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf" \
 --local-dir "$HOME/llm"
 
 # Download Qwen3 Coder
@@ -541,9 +552,9 @@ hf download \
 
 # Configure aliases
 tee ${HOME}/.zshrc.d/llm << 'EOF'
-alias devstral="llama-server -m $HOME/llm/Devstral-Small-2507-UD-Q4_K_XL.gguf --jinja -ngl 99 --threads -5 --ctx-size 32684 --temp 0.15 --min-p 0.01 --top-p 0.95 --top-k 64 --repeat-penalty 1.0 --cache-type-k q8_0"
-alias qwen="llama-server -m $HOME/llm/Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf --jinja -ngl 99 --threads -5 --ctx-size 32684 --temp 0.7 --min-p 0.0 --top-p 0.80 --top-k 20 --repeat-penalty 1.05"
-alias gpt="llama-server -m $HOME/llm/gpt-oss-20b-F16.gguf --jinja -ngl 99 --threads -5 --ctx-size 32684 --temp 1.0 --top-p 1.0 --top-k 0"
+alias devstral="llama-server --model $HOME/llm/Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf --threads -1 --n-gpu-layers 99 --ctx-size 16384 --jinja --temp 0.15 --min_p 0.01"
+alias qwen="llama-server --model $HOME/llm/Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf --threads -1 --n-gpu-layers 99 --ctx-size 16384 --jinja --temp 0.7 --min-p 0.0 --top-p 0.80 --top-k 20 --repeat-penalty 1.05"
+alias gpt="llama-server --model $HOME/llm/gpt-oss-20b-F16.gguf --threads -1 --n-gpu-layers 99 --ctx-size 16384 --jinja --temp 1.0 --top-k 0 --top-p 1.0"
 EOF
 
 ################################################
