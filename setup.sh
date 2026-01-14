@@ -565,11 +565,13 @@ EOF
 ################################################
 
 # qdrant (vectorial database)
+docker volume create qdrant_data
+
 docker run -d \
   --name qdrant \
   --restart=always \
   -p 6333:6333 \
-  -v /Users/$USER/Documents/qdrant:/qdrant/storage \
+  -v qdrant_data:/qdrant/storage \
   qdrant/qdrant
 
 # Install specify
