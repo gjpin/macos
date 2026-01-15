@@ -85,6 +85,13 @@ brew install --cask discord
 # brew install gromgit/fuse/ntfs-3g-mac
 # brew install --cask mounty
 
+################################################
+##### Development
+################################################
+
+# Install Python tools
+brew install ruff ty uv
+
 # Install golang
 brew install go
 tee ${HOME}/.zshrc.d/go << EOF
@@ -109,20 +116,6 @@ brew install deno
 
 # Install node
 brew install node npm pnpm
-npm install -g mcp-remote
-
-# Updater helper
-sudo tee /usr/local/bin/update-all << EOF
-#!/opt/homebrew/bin/bash
-
-# Update brew packages
-brew update
-
-# Update global NPM packages
-npm update -g
-EOF
-
-sudo chmod +x /usr/local/bin/update-all
 
 ################################################
 ##### SOPS
@@ -368,6 +361,8 @@ curl https://raw.githubusercontent.com/gjpin/macos/main/configs/vscode/settings.
 code --install-extension kilocode.kilo-code
 code --install-extension golang.go
 code --install-extension ms-vscode-remote.remote-containers
+code --install-extension astral-sh.ty
+code --install-extension charliermarsh.ruff
 
 ################################################
 ##### Fonts
@@ -541,7 +536,3 @@ brew install specify
 # Install opencode
 # https://github.com/sst/opencode
 brew install opencode
-
-# Install openspec
-# https://github.com/Fission-AI/OpenSpec
-npm install -g @fission-ai/openspec@latest
