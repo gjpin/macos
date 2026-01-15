@@ -66,13 +66,17 @@ brew install \
 brew install --cask spotify
 brew install --cask brave-browser
 brew install --cask obsidian
-brew install --cask orcaslicer
-brew install --cask freecad
-brew install --cask moonlight
-brew install --cask discord
 brew install --cask thunderbird
 brew install --cask bitwarden
 # brew install --cask lulu
+
+# Install 3D printing apps
+brew install --cask orcaslicer
+brew install --cask freecad
+
+# Install gaming apps
+brew install --cask moonlight
+brew install --cask discord
 
 # NTFS support
 # https://mounty.app/#installation
@@ -284,12 +288,21 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 ##### Podman
 ################################################
 
+# Install krunkit
+brew tap slp/krunkit
+brew install krunkit
+
 # Install Podman and Podman desktop
-# brew install podman podman-compose
-# brew install --cask podman-desktop
+brew install podman podman-compose
+brew install --cask podman-desktop
 
 # Set Podman VM specs
-# podman machine init --cpus 4 --memory 8192
+podman machine init --cpus 4 --memory 4096
+
+# Set Docker host path
+tee ${HOME}/.zshrc.d/podman << EOF
+alias docker=podman
+EOF
 
 ################################################
 ##### zsh
@@ -341,58 +354,6 @@ minikube config set cpus 4
 minikube config set memory 8192
 
 ################################################
-##### Docker (Lima)
-################################################
-
-# References:
-# https://lima-vm.io/docs/examples/containers/docker/
-# https://naomiaro.hashnode.dev/replacing-docker-desktop-with-lima-on-mac-os
-
-# Install Docker
-brew install docker docker-buildx docker-compose docker-credential-helper
-
-# Install Lima
-brew install lima
-
-# Create and configure Docker profile
-limactl create --name=docker template://docker
-limactl edit docker --cpus 4
-limactl edit docker --memory 16
-
-# Set Docker host path
-tee ${HOME}/.zshrc.d/docker << EOF
-export DOCKER_HOST=$(limactl list docker --format unix:///Users/${USER}/.lima/docker/sock/docker.sock)
-EOF
-
-# Configure Docker
-json_data=$(cat "${HOME}/.docker/config.json")
-updated_json=$(echo "$json_data" | jq '. + {cliPluginsExtraDirs: ["/opt/homebrew/lib/docker/cli-plugins"]}')
-echo "$updated_json" > "${HOME}/.docker/config.json"
-
-# Set buildx as default Docker builder
-docker buildx install
-
-# Make ~ writable by Lima
-sed -i '/mounts:/a \- location: "/Users/'"$USER"'"\n  writable: true\n' ~/.lima/docker/lima.yaml
-
-# Autostart Lima with Docker profile
-limactl start-at-login docker --enabled
-
-################################################
-##### Zed
-################################################
-
-# Install Zed
-brew install --cask zed
-
-# Configure Zed
-mkdir -p ${HOME}/.config/zed/themes
-curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zed/settings.json -o ${HOME}/.config/zed/settings.json
-
-# Download VSCode Dark Modern theme
-curl https://raw.githubusercontent.com/kcamcam/vscode_dark_modern.zed/refs/heads/main/themes/vscode-dark-modern.json -o ${HOME}/.config/zed/themes/vscode-dark-modern.json
-
-################################################
 ##### Visual Studio Code
 ################################################
 
@@ -404,7 +365,6 @@ mkdir -p "${HOME}/Library/Application Support/Code/User"
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/vscode/settings.json -o "${HOME}/Library/Application Support/Code/User/settings.json"
 
 # Install extensions
-code --install-extension saoudrizwan.claude-dev
 code --install-extension kilocode.kilo-code
 code --install-extension golang.go
 code --install-extension ms-vscode-remote.remote-containers
@@ -565,9 +525,9 @@ EOF
 ################################################
 
 # qdrant (vectorial database)
-docker volume create qdrant_data
+podman volume create qdrant_data
 
-docker run -d \
+podman run -d \
   --name qdrant \
   --restart=always \
   -p 6333:6333 \

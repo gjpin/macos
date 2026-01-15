@@ -1,4 +1,56 @@
 ################################################
+##### Docker (Lima)
+################################################
+
+# References:
+# https://lima-vm.io/docs/examples/containers/docker/
+# https://naomiaro.hashnode.dev/replacing-docker-desktop-with-lima-on-mac-os
+
+# Install Docker
+brew install docker docker-buildx docker-compose docker-credential-helper
+
+# Install Lima
+brew install lima
+
+# Create and configure Docker profile
+limactl create --name=docker template://docker
+limactl edit docker --cpus 4
+limactl edit docker --memory 16
+
+# Set Docker host path
+tee ${HOME}/.zshrc.d/docker << EOF
+export DOCKER_HOST=$(limactl list docker --format unix:///Users/${USER}/.lima/docker/sock/docker.sock)
+EOF
+
+# Configure Docker
+json_data=$(cat "${HOME}/.docker/config.json")
+updated_json=$(echo "$json_data" | jq '. + {cliPluginsExtraDirs: ["/opt/homebrew/lib/docker/cli-plugins"]}')
+echo "$updated_json" > "${HOME}/.docker/config.json"
+
+# Set buildx as default Docker builder
+docker buildx install
+
+# Make ~ writable by Lima
+sed -i '/mounts:/a \- location: "/Users/'"$USER"'"\n  writable: true\n' ${HOME}/.lima/docker/lima.yaml
+
+# Autostart Lima with Docker profile
+limactl start-at-login docker --enabled
+
+################################################
+##### Zed
+################################################
+
+# Install Zed
+brew install --cask zed
+
+# Configure Zed
+mkdir -p ${HOME}/.config/zed/themes
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zed/settings.json -o ${HOME}/.config/zed/settings.json
+
+# Download VSCode Dark Modern theme
+curl https://raw.githubusercontent.com/kcamcam/vscode_dark_modern.zed/refs/heads/main/themes/vscode-dark-modern.json -o ${HOME}/.config/zed/themes/vscode-dark-modern.json
+
+################################################
 ##### Preferences
 ################################################
 
