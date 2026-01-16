@@ -534,5 +534,5 @@ podman run -d \
 brew install specify
 
 # Install opencode
-# https://github.com/sst/opencode
-brew install opencode
+# https://github.com/anomalyco/opencode
+brew install anomalyco/tap/opencode
