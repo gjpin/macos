@@ -89,6 +89,27 @@ brew install --cask discord
 ##### Development
 ################################################
 
+# Install rust tools
+brew install rustup sccache
+tee ${HOME}/.zshrc.d/rust << EOF
+PATH="${HOME}/.cargo/bin:\$PATH"
+EOF
+
+# Install Rust stable toolchain
+rustup default stable
+
+# Install Rust tools
+rustup component add rust-analyzer
+rustup component add clippy
+rustup component add rustfmt
+
+# Configure Cargo
+mkdir -p ${HOME}/.cargo
+tee ${HOME}/.cargo/config.toml << EOF
+[build]
+rustc-wrapper = "sccache"
+EOF
+
 # Install Python tools
 brew install ruff ty uv
 
