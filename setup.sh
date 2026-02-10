@@ -92,7 +92,7 @@ brew install --cask discord
 # Install rust tools
 brew install rustup sccache
 tee ${HOME}/.zshrc.d/rust << EOF
-PATH="${HOME}/.cargo/bin:\$PATH"
+PATH="/opt/homebrew/opt/rustup/bin:${HOME}/.cargo/bin:\$PATH"
 EOF
 
 # Install Rust stable toolchain
