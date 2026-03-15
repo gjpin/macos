@@ -513,27 +513,61 @@ hf download \
 --include "Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf" \
 --local-dir "$HOME/llm"
 
-# Download Qwen3 Coder
-# https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF
-# https://docs.unsloth.ai/models/qwen3-coder-how-to-run-locally#llama.cpp-run-qwen3-coder-30b-a3b-instruct-tutorial
+# Download Qwen3.5 9B
+# https://huggingface.co/unsloth/Qwen3.5-9B-GGUF
+# http://unsloth.ai/docs/models/qwen3.5
 hf download \
-"unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF" \
---include "Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf" \
+"unsloth/Qwen3.5-9B-GGUF" \
+--include "Qwen3.5-9B-Q5_K_M.gguf" \
 --local-dir "$HOME/llm"
 
-# Download gpt oss
-# https://huggingface.co/unsloth/gpt-oss-20b-GGUF
-# https://docs.unsloth.ai/new/gpt-oss-how-to-run-and-fine-tune#run-gpt-oss-20b
+# Download Qwen3.5 35B A3B
+# https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF
+# https://unsloth.ai/docs/models/qwen3.5
 hf download \
-"unsloth/gpt-oss-20b-GGUF" \
---include "gpt-oss-20b-F16.gguf" \
+"unsloth/Qwen3.5-35B-A3B-GGUF" \
+--include "Qwen3.5-35B-A3B-Q4_K_M.gguf" \
+--local-dir "$HOME/llm"
+
+# Download Crow 9B (Qwen 3.5 9B distilled from Claude Opus 4.6)
+# https://huggingface.co/Crownelius/Crow-9B-HERETIC
+hf download \
+"Crownelius/Crow-9B-HERETIC" \
+--include "Qwen3.5-9B-heretic-v2.Q5_K_M.gguf" \
 --local-dir "$HOME/llm"
 
 # Configure aliases
 tee ${HOME}/.zshrc.d/llm << 'EOF'
-alias devstral="llama-server --model $HOME/llm/Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf --threads -1 --n-gpu-layers 99 --ctx-size 16384 --jinja --temp 0.15 --min_p 0.01"
-alias qwen="llama-server --model $HOME/llm/Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf --threads -1 --n-gpu-layers 99 --ctx-size 16384 --jinja --temp 0.7 --min-p 0.0 --top-p 0.80 --top-k 20 --repeat-penalty 1.05"
-alias gpt="llama-server --model $HOME/llm/gpt-oss-20b-F16.gguf --threads -1 --n-gpu-layers 99 --ctx-size 16384 --jinja --temp 1.0 --top-k 0 --top-p 1.0"
+LLAMA_COMMON="--threads 8 --n-gpu-layers 99 --jinja"
+
+alias devstral="llama-server $LLAMA_COMMON \
+  --model \$HOME/llm/Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf \
+  --ctx-size 16384 \
+  --temp 0.15 --min_p 0.01"
+
+alias qwen3.5-9b="llama-server $LLAMA_COMMON \
+  --model \$HOME/llm/Qwen3.5-9B-Q5_K_M.gguf \
+  --ctx-size 65536 \
+  --temp 1.0 --min-p 0.0 --top-p 0.95 --top-k 20 \
+  --repeat-penalty 1.00 --presence-penalty 1.5 \
+  --chat-template-kwargs '{\"enable_thinking\":false}' \
+  --flash-attn on"
+
+alias qwen3.5-35b-a3b="llama-server $LLAMA_COMMON \
+  --model \$HOME/llm/Qwen3.5-35B-A3B-Q4_K_M.gguf \
+  --ctx-size 65536 \
+  --temp 0.6 --min-p 0.0 --top-p 0.95 --top-k 20 \
+  --repeat-penalty 1.00 --presence-penalty 0.0 \
+  --chat-template-kwargs '{\"enable_thinking\":true}' \
+  --flash-attn on"
+
+alias crow="llama-server $LLAMA_COMMON \
+  --model \$HOME/llm/Qwen3.5-9B-heretic-v2.Q5_K_M.gguf \
+  --ctx-size 65536 \
+  --temp 0.5 --min-p 0.00 --top-p 0.95 --top-k 20 \
+  --repeat-penalty 1.05 \
+  --chat-template-kwargs '{\"enable_thinking\":false}' \
+  --flash-attn on"
 EOF
 
 ################################################
