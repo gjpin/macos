@@ -542,7 +542,7 @@ LLAMA_COMMON="--threads 8 --n-gpu-layers 99 --jinja"
 
 alias devstral="llama-server $LLAMA_COMMON \
   --model \$HOME/llm/Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf \
-  --ctx-size 16384 \
+  --ctx-size 65536 \
   --temp 0.15 --min_p 0.01"
 
 alias qwen3.5-9b="llama-server $LLAMA_COMMON \
