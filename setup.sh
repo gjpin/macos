@@ -529,11 +529,11 @@ hf download \
 --include "Qwen3.5-35B-A3B-Q4_K_M.gguf" \
 --local-dir "$HOME/llm"
 
-# Download Crow 9B (Qwen 3.5 9B distilled from Claude Opus 4.6)
-# https://huggingface.co/Crownelius/Crow-9B-HERETIC
+# Download OmniCoder 9B
+# https://huggingface.co/Tesslate/OmniCoder-9B-GGUF
 hf download \
-"Crownelius/Crow-9B-HERETIC" \
---include "Qwen3.5-9B-heretic-v2.Q5_K_M.gguf" \
+"Tesslate/OmniCoder-9B-GGUF" \
+--include "omnicoder-9b-q5_k_m.gguf" \
 --local-dir "$HOME/llm"
 
 # Configure aliases
@@ -561,12 +561,11 @@ alias qwen3.5-35b-a3b="llama-server $LLAMA_COMMON \
   --chat-template-kwargs '{\"enable_thinking\":true}' \
   --flash-attn on"
 
-alias crow="llama-server $LLAMA_COMMON \
-  --model \$HOME/llm/Qwen3.5-9B-heretic-v2.Q5_K_M.gguf \
+alias omnicoder="llama-server $LLAMA_COMMON \
+  --model \$HOME/llm/omnicoder-9b-q5_k_m.gguf \
   --ctx-size 65536 \
-  --temp 0.5 --min-p 0.00 --top-p 0.95 --top-k 20 \
-  --repeat-penalty 1.05 \
-  --chat-template-kwargs '{\"enable_thinking\":false}' \
+  --temp 0.4 --top-p 0.95 --top-k 20 \
+  --presence-penalty 0.0 \
   --flash-attn on"
 EOF
 
