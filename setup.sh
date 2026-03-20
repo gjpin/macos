@@ -536,6 +536,22 @@ hf download \
 --include "omnicoder-9b-q5_k_m.gguf" \
 --local-dir "$HOME/llm"
 
+# Download GLM-4.7-Flash
+# https://huggingface.co/unsloth/GLM-4.7-Flash-GGUF
+# https://unsloth.ai/docs/models/glm-4.7-flash
+hf download \
+"unsloth/GLM-4.7-Flash-GGUF" \
+--include "GLM-4.7-Flash-Q4_K_M.gguf" \
+--local-dir "$HOME/llm"
+
+# Download GPT OSS 20b
+# https://huggingface.co/unsloth/gpt-oss-20b-GGUF
+# https://unsloth.ai/docs/models/gpt-oss-how-to-run-and-fine-tune
+hf download \
+"unsloth/gpt-oss-20b-GGUF" \
+--include "gpt-oss-20b-F16.gguf" \
+--local-dir "$HOME/llm"
+
 # Configure aliases
 tee ${HOME}/.zshrc.d/llm << 'EOF'
 LLAMA_COMMON="--threads 8 --n-gpu-layers 99 --jinja"
@@ -564,9 +580,22 @@ alias qwen3.5-35b-a3b="llama-server $LLAMA_COMMON \
 alias omnicoder="llama-server $LLAMA_COMMON \
   --model \$HOME/llm/omnicoder-9b-q5_k_m.gguf \
   --ctx-size 65536 \
-  --temp 0.4 --top-p 0.95 --top-k 20 \
+  --temp 0.4 --min-p 0.01 --top-p 0.95 --top-k 20 \
   --presence-penalty 0.0 \
   --chat-template-kwargs '{\"enable_thinking\":false}' \
+  --flash-attn on"
+
+alias glm-4.7-flash="llama-server $LLAMA_COMMON \
+  --model \$HOME/llm/GLM-4.7-Flash-Q4_K_M.gguf \
+  --ctx-size 65536 \
+  --temp 0.7 --min-p 0.01 --top-p 1.0 \
+  --repeat-penalty 1.00 \
+  --flash-attn on"
+
+alias gpt-oss-20b="llama-server $LLAMA_COMMON \
+  --model \$HOME/llm/gpt-oss-20b-F16.gguf \
+  --ctx-size 65536 \
+  --temp 1.0 --top-p 1.0 --top-k 0 \
   --flash-attn on"
 EOF
 
