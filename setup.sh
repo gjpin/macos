@@ -566,6 +566,7 @@ alias omnicoder="llama-server $LLAMA_COMMON \
   --ctx-size 65536 \
   --temp 0.4 --top-p 0.95 --top-k 20 \
   --presence-penalty 0.0 \
+  --chat-template-kwargs '{\"enable_thinking\":false}' \
   --flash-attn on"
 EOF
 
