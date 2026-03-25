@@ -13,9 +13,9 @@ brew install docker docker-buildx docker-compose docker-credential-helper
 brew install lima
 
 # Create and configure Docker profile
-limactl create --name=docker template://docker
-limactl edit docker --cpus 4
-limactl edit docker --memory 16
+limactl create --name=docker template:docker
+limactl edit docker --cpus 2
+limactl edit docker --memory 2
 
 # Set Docker host path
 tee ${HOME}/.zshrc.d/docker << EOF
@@ -31,7 +31,7 @@ echo "$updated_json" > "${HOME}/.docker/config.json"
 docker buildx install
 
 # Make ~ writable by Lima
-sed -i '/mounts:/a \- location: "/Users/'"$USER"'"\n  writable: true\n' ${HOME}/.lima/docker/lima.yaml
+sed -i '/mounts:/a \- location: "/Users/'"$USER"'/src"\n  writable: true\n' ${HOME}/.lima/docker/lima.yaml
 
 # Autostart Lima with Docker profile
 limactl start-at-login docker --enabled
