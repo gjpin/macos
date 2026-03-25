@@ -13,9 +13,9 @@ brew install docker docker-buildx docker-compose docker-credential-helper
 brew install lima
 
 # Create and configure Docker profile
-limactl create --name=docker template:docker
-limactl edit docker --cpus 2
-limactl edit docker --memory 2
+limactl create --name=docker template:docker-rootful
+limactl edit docker --cpus 2 --start=false
+limactl edit docker --memory 2 --start=false
 
 # Set Docker host path
 tee ${HOME}/.zshrc.d/docker << EOF
