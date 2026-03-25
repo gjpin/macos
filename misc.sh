@@ -23,15 +23,20 @@ export DOCKER_HOST=$(limactl list docker --format unix:///Users/${USER}/.lima/do
 EOF
 
 # Configure Docker
-json_data=$(cat "${HOME}/.docker/config.json")
-updated_json=$(echo "$json_data" | jq '. + {cliPluginsExtraDirs: ["/opt/homebrew/lib/docker/cli-plugins"]}')
-echo "$updated_json" > "${HOME}/.docker/config.json"
-
-# Set buildx as default Docker builder
-docker buildx install
+mkdir -p ${HOME}/.docker/
+tee ${HOME}/.docker/config.json << 'EOF'
+{
+    "cliPluginsExtraDirs": [
+        "/opt/homebrew/lib/docker/cli-plugins"
+    ]
+}
+EOF
 
 # Make ~ writable by Lima
-sed -i '/mounts:/a \- location: "/Users/'"$USER"'/src"\n  writable: true\n' ${HOME}/.lima/docker/lima.yaml
+sed -i '' '/mounts:/a\
+- location: "/Users/'"$USER"'/src"\
+  writable: true
+' "${HOME}/.lima/docker/lima.yaml"
 
 # Autostart Lima with Docker profile
 limactl start-at-login docker --enabled
