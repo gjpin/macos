@@ -302,6 +302,9 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 ##### Podman
 ################################################
 
+# References:
+# https://docs.podman.io/en/v5.8.1/markdown/podman-machine-init.1.html
+
 # Install krunkit
 brew tap slp/krunkit
 brew install krunkit
@@ -311,7 +314,10 @@ brew install podman podman-compose
 brew install --cask podman-desktop
 
 # Set Podman VM specs
-podman machine init --cpus 4 --memory 4096
+podman machine init --cpus 2 --memory 2048 --rootful default
+
+# Install system helper service (provides better Docker compatibility)
+sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
 
 # Set Docker host path
 tee ${HOME}/.zshrc.d/podman << EOF
@@ -491,6 +497,19 @@ brew install --cask material-maker
 
 # Install Blender
 brew install --cask blender
+
+################################################
+##### OpenShell
+################################################
+
+# References:
+# https://github.com/NVIDIA/OpenShell
+
+# Install OpenShell
+# curl -LsSf https://raw.githubusercontent.com/NVIDIA/OpenShell/main/install.sh | sh
+
+# Create opencode sandbox
+# openshell sandbox create --name opencode -- opencode
 
 ################################################
 ##### LLM models
