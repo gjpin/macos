@@ -32,7 +32,7 @@ tee ${HOME}/.docker/config.json << 'EOF'
 }
 EOF
 
-# Make ~ writable by Lima
+# Make ~/src writable by Lima
 sed -i '' '/mounts:/a\
 - location: "/Users/'"$USER"'/src"\
   writable: true
