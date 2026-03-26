@@ -304,9 +304,10 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 
 # References:
 # https://docs.podman.io/en/v5.8.1/markdown/podman-machine-init.1.html
+# https://github.com/containers/krunkit
 
 # Install krunkit
-brew tap slp/krunkit
+brew tap slp/krun
 brew install krunkit
 
 # Install Podman and Podman desktop
