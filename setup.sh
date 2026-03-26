@@ -315,7 +315,7 @@ brew install podman podman-compose
 brew install --cask podman-desktop
 
 # Set Podman VM specs
-podman machine init --cpus 2 --memory 2048
+podman machine init --cpus 2 --memory 4096
 
 # Install system helper service (provides better Docker compatibility)
 sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
