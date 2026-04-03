@@ -84,6 +84,7 @@ brew install --cask obsidian
 brew install --cask thunderbird
 brew install --cask bitwarden
 brew install --cask lulu
+brew install --cask lm-studio
 
 # Install 3D printing apps
 brew install --cask orcaslicer
