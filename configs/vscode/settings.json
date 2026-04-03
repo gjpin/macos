@@ -19,13 +19,15 @@
     "git.enableSmartCommit": true,
     "git.confirmSync": false,
     "git.autofetch": true,
+    "workbench.colorTheme": "Dark Modern",
     "workbench.colorCustomizations": {
-      "[Default Dark Modern]": {
+      "[Dark Modern]": {
         "editor.background": "#181818"
       }
     },
     "editor.fontSize": 14,
     "update.showReleaseNotes": false,
-    "terminal.integrated.fontSize": 14
+    "terminal.integrated.fontSize": 14,
+    "kilo-code.debug": false
   }
   

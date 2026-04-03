@@ -1,4 +1,196 @@
 ################################################
+##### SOPS
+################################################
+
+# References:
+# https://github.com/getsops/sops
+# https://github.com/FiloSottile/age
+
+# Install SOPS and age
+brew install \
+    sops \
+    age
+
+# Create SOPS directory
+mkdir ${HOME}/.sops
+
+# Add SOPS key file to env
+tee ${HOME}/.zshrc.d/sops << 'EOF'
+export SOPS_AGE_KEY_FILE=$HOME/.sops/key.txt
+EOF
+
+# Encryption helpers
+# https://dev.to/docteurrs/goodbye-sealed-secrets-hello-sops-1ken
+tee -a ${HOME}/.zshrc.d/sops << 'EOF'
+
+function encrypt_file {
+    filename=$(basename -- "$1")
+    extension="${filename##*.}"
+    filename="${filename%.*}"
+    sops encrypt --age $(cat ~/.sops/key.txt |grep -oP "public key: \K(.*)") $2 $3 $1 > "$filename.enc.$extension"
+}
+
+function encrypt_file_inplace {
+    sops encrypt --in-place --age $(cat ~/.sops/key.txt |grep -oP "public key: \K(.*)") $2 $3 $1
+}
+EOF
+
+# Generate SOPS key
+# age-keygen -o ${HOME}/.sops/key.txt
+
+################################################
+##### Rust
+################################################
+
+# Install rust tools
+brew install rustup sccache
+tee ${HOME}/.zshrc.d/rust << EOF
+PATH="/opt/homebrew/opt/rustup/bin:${HOME}/.cargo/bin:\$PATH"
+EOF
+
+# Install Rust stable toolchain
+rustup default stable
+
+# Install Rust tools
+rustup component add rust-analyzer
+rustup component add clippy
+rustup component add rustfmt
+
+# Configure Cargo
+mkdir -p ${HOME}/.cargo
+tee ${HOME}/.cargo/config.toml << EOF
+[build]
+rustc-wrapper = "sccache"
+EOF
+
+tee -a ${HOME}/.local/bin/update-all << 'EOF'
+
+# Update rust
+rustup update
+EOF
+
+################################################
+##### Podman
+################################################
+
+# References:
+# https://docs.podman.io/en/v5.8.1/markdown/podman-machine-init.1.html
+# https://github.com/containers/krunkit
+
+# Install krunkit
+brew tap slp/krun
+brew install krunkit
+
+# Install Podman
+brew install podman podman-compose
+
+# Set Podman VM specs
+podman machine init --cpus 2 --memory 4096
+
+# Install system helper service (provides better Docker compatibility)
+sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
+
+# Set Docker host path
+tee ${HOME}/.zshrc.d/podman << EOF
+alias docker=podman
+EOF
+
+################################################
+##### llama.cpp
+################################################
+
+# Build and install llama.cpp
+git clone https://github.com/ggml-org/llama.cpp
+
+cmake llama.cpp -B llama.cpp/build \
+    -DBUILD_SHARED_LIBS=OFF -DGGML_CUDA=OFF
+
+cmake --build llama.cpp/build --config Release -j \
+    --clean-first --target llama-cli llama-mtmd-cli \
+    llama-server llama-gguf-split
+
+cp llama.cpp/build/bin/llama-* ~/.local/bin
+
+################################################
+##### Development
+################################################
+
+# Install dotnet
+brew install dotnet@10
+tee ${HOME}/.zshrc.d/dotnet << 'EOF'
+PATH="/opt/homebrew/opt/dotnet@10/bin:$PATH"
+EOF
+
+# Install Temurin JDK
+brew install --cask temurin
+
+# Install Deno
+brew install deno
+
+################################################
+##### VR
+################################################
+
+# Install sidequest
+brew install --cask sidequest
+
+# Install Meta Quest Developer Hub for Mac
+brew install --cask meta-quest-developer-hub
+
+# Meta Quest remote desktop app
+# https://www.meta.com/help/quest/1370025034331518/
+
+################################################
+##### Gaming
+################################################
+
+# Install gaming related apps
+brew install --cask moonlight
+brew install --cask discord
+
+# Install Heroic Games Launcher
+brew install --cask heroic
+
+################################################
+##### Game Dev
+################################################
+
+# Install scons
+brew install scons
+
+# Install Vulkan tools and SDK
+brew install vulkan-tools
+
+# Install Material Maker
+brew install --cask material-maker
+
+# Install Blender
+brew install --cask blender
+
+################################################
+##### OpenShell
+################################################
+
+# References:
+# https://github.com/NVIDIA/OpenShell
+
+# Install OpenShell
+curl -LsSf https://raw.githubusercontent.com/NVIDIA/OpenShell/main/install.sh | sh
+
+# Create opencode sandbox
+openshell sandbox create --name opencode -- opencode
+
+################################################
+##### NTFS support
+################################################
+
+# https://mounty.app/#installation
+# General -> login items & extensions -> Benjamin Fleischer
+brew install --cask macfuse
+brew install gromgit/fuse/ntfs-3g-mac
+brew install --cask mounty
+
+################################################
 ##### Docker (Lima)
 ################################################
 

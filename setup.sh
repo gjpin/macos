@@ -34,6 +34,19 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 sudo chown -R $USER /opt/homebrew/var/log
 chmod u+w /opt/homebrew/var/log
 
+# Updater helper
+tee ${HOME}/.local/bin/update-all << 'EOF'
+#!/usr/bin/env zsh
+
+# Update brew repos
+brew update
+
+# Update brew packages
+brew upgrade
+EOF
+
+chmod +x ${HOME}/.local/bin/update-all
+
 ################################################
 ##### Common applications
 ################################################
@@ -60,7 +73,9 @@ brew install \
     iproute2mac \
     fzf \
     pipx \
-    jsonnet
+    jsonnet \
+    cmake \
+    make
 
 # Install casks
 brew install --cask spotify
@@ -68,47 +83,15 @@ brew install --cask brave-browser
 brew install --cask obsidian
 brew install --cask thunderbird
 brew install --cask bitwarden
-# brew install --cask lulu
+brew install --cask lulu
 
 # Install 3D printing apps
 brew install --cask orcaslicer
 brew install --cask freecad
 
-# Install gaming apps
-brew install --cask moonlight
-brew install --cask discord
-
-# NTFS support
-# https://mounty.app/#installation
-# General -> login items & extensions -> Benjamin Fleischer
-# brew install --cask macfuse
-# brew install gromgit/fuse/ntfs-3g-mac
-# brew install --cask mounty
-
 ################################################
 ##### Development
 ################################################
-
-# Install rust tools
-brew install rustup sccache
-tee ${HOME}/.zshrc.d/rust << EOF
-PATH="/opt/homebrew/opt/rustup/bin:${HOME}/.cargo/bin:\$PATH"
-EOF
-
-# Install Rust stable toolchain
-rustup default stable
-
-# Install Rust tools
-rustup component add rust-analyzer
-rustup component add clippy
-rustup component add rustfmt
-
-# Configure Cargo
-mkdir -p ${HOME}/.cargo
-tee ${HOME}/.cargo/config.toml << EOF
-[build]
-rustc-wrapper = "sccache"
-EOF
 
 # Install Python tools
 brew install ruff ty uv
@@ -116,75 +99,26 @@ brew install ruff ty uv
 # Install golang
 brew install go
 tee ${HOME}/.zshrc.d/go << EOF
+export GOPATH=${HOME}/.go
 PATH="$(go env GOPATH)/bin:\$PATH"
 EOF
-
-# Install dotnet
-brew install dotnet@8
-tee ${HOME}/.zshrc.d/dotnet << 'EOF'
-PATH="/opt/homebrew/opt/dotnet@8/bin:$PATH"
-EOF
-
-# Install Temurin JDK
-brew install --cask temurin
 
 # Install Android tools
 brew install --cask android-commandlinetools
 brew install --cask android-platform-tools
 
-# Install Deno
-brew install deno
-
 # Install node
 brew install node npm pnpm
-
-################################################
-##### SOPS
-################################################
-
-# References:
-# https://github.com/getsops/sops
-# https://github.com/FiloSottile/age
-
-# Install SOPS and age
-brew install \
-    sops \
-    age
-
-# Create SOPS directory
-mkdir ${HOME}/.sops
-
-# Add SOPS key file to env
-tee ${HOME}/.zshrc.d/sops << 'EOF'
-export SOPS_AGE_KEY_FILE=$HOME/.sops/key.txt
-EOF
-
-# Encryption helpers
-# https://dev.to/docteurrs/goodbye-sealed-secrets-hello-sops-1ken
-
-tee -a ${HOME}/.zshrc.d/sops << 'EOF'
-
-function encrypt_file {
-    filename=$(basename -- "$1")
-    extension="${filename##*.}"
-    filename="${filename%.*}"
-    sops encrypt --age $(cat ~/.sops/key.txt |grep -oP "public key: \K(.*)") $2 $3 $1 > "$filename.enc.$extension"
-}
-
-function encrypt_file_inplace {
-    sops encrypt --in-place --age $(cat ~/.sops/key.txt |grep -oP "public key: \K(.*)") $2 $3 $1
-}
-EOF
-
-# Generate SOPS key
-# age-keygen -o ${HOME}/.sops/key.txt
+npm config set ignore-scripts true
 
 ################################################
 ##### SSH
 ################################################
 
+# Create SSH directory
 mkdir -p ${HOME}/.ssh
 
+# Copy SSH config file
 tee ${HOME}/.ssh/config << 'EOF'
 Host *
   UseKeychain yes
@@ -226,13 +160,15 @@ brew install autoconf bash binutils coreutils diffutils ed findutils flex gawk \
 # Add GNU utils to path
 tee ${HOME}/.zshrc.d/gnu-utils << 'EOF'
 # GNU utils — bin
-for pkg in make libtool gsed grep gpatch gnu-which gnu-tar gnu-sed gnu-indent gawk findutils ed coreutils; do
+# for pkg in make libtool grep gpatch gnu-which gnu-tar gnu-sed gnu-indent gawk findutils ed coreutils; do
+
+for pkg in grep gnu-sed coreutils; do
   PATH="/opt/homebrew/opt/$pkg/libexec/gnubin:$PATH"
 done
 export PATH
 
 # GNU utils — manpages
-for pkg in make libtool gsed grep gpatch gnu-which gnu-tar gnu-sed gnu-indent gawk findutils ed coreutils; do
+for pkg in grep gnu-sed coreutils; do
   PATH="/opt/homebrew/opt/$pkg/libexec/gnuman:$PATH"
 done
 export MANPATH
@@ -299,31 +235,12 @@ sudo launchctl enable system/com.wireguard.wg0
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 
 ################################################
-##### Podman
+##### Apple Containers
 ################################################
 
-# References:
-# https://docs.podman.io/en/v5.8.1/markdown/podman-machine-init.1.html
-# https://github.com/containers/krunkit
-
-# Install krunkit
-brew tap slp/krun
-brew install krunkit
-
-# Install Podman and Podman desktop
-brew install podman podman-compose
-brew install --cask podman-desktop
-
-# Set Podman VM specs
-podman machine init --cpus 2 --memory 4096
-
-# Install system helper service (provides better Docker compatibility)
-sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
-
-# Set Docker host path
-tee ${HOME}/.zshrc.d/podman << EOF
-alias docker=podman
-EOF
+brew install container
+brew services start container
+container system kernel set --recommended
 
 ################################################
 ##### zsh
@@ -371,8 +288,8 @@ brew install opentofu
 # Install minikube
 brew install minikube vfkit
 minikube config set driver vfkit
-minikube config set cpus 4
-minikube config set memory 8192
+minikube config set cpus 2
+minikube config set memory 4096
 
 ################################################
 ##### Visual Studio Code
@@ -391,6 +308,8 @@ code --install-extension golang.go
 code --install-extension ms-vscode-remote.remote-containers
 code --install-extension astral-sh.ty
 code --install-extension charliermarsh.ruff
+# code --install-extension ms-vscode.remote-explorer
+# code --install-extension ms-vscode-remote.remote-ssh
 
 ################################################
 ##### Fonts
@@ -462,203 +381,3 @@ defaults write com.apple.dock mru-spaces -bool false
 
 # Enable FileVault
 sudo fdesetup enable
-
-################################################
-##### VR
-################################################
-
-# Install sidequest
-brew install --cask sidequest
-
-# Install Meta Quest Developer Hub for Mac
-brew install --cask meta-quest-developer-hub
-
-# Meta Quest remote desktop app
-# https://www.meta.com/help/quest/1370025034331518/
-
-################################################
-##### Gaming
-################################################
-
-# Install Heroic Games Launcher
-brew install --cask heroic
-
-################################################
-##### Game Dev
-################################################
-
-# Install scons
-brew install scons
-
-# Install Vulkan tools and SDK
-brew install vulkan-tools
-
-# Install Material Maker
-brew install --cask material-maker
-
-# Install Blender
-brew install --cask blender
-
-################################################
-##### OpenShell
-################################################
-
-# References:
-# https://github.com/NVIDIA/OpenShell
-
-# Install OpenShell
-# curl -LsSf https://raw.githubusercontent.com/NVIDIA/OpenShell/main/install.sh | sh
-
-# Create opencode sandbox
-# openshell sandbox create --name opencode -- opencode
-
-################################################
-##### LLM models
-################################################
-
-# Install huggingface CLI
-brew install huggingface-cli
-
-# Install llama.cpp
-brew install llama.cpp
-
-# Create directory for LLM models
-mkdir -p $HOME/llm
-
-# Download Devstral 2 (25-12)
-# https://huggingface.co/unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF
-# https://unsloth.ai/docs/models/devstral-2
-hf download \
-"unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF" \
---include "Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf" \
---local-dir "$HOME/llm"
-
-# Download Qwen3.5 9B
-# https://huggingface.co/unsloth/Qwen3.5-9B-GGUF
-# http://unsloth.ai/docs/models/qwen3.5
-hf download \
-"unsloth/Qwen3.5-9B-GGUF" \
---include "Qwen3.5-9B-Q5_K_M.gguf" \
---local-dir "$HOME/llm"
-
-# Download Qwen3.5 35B A3B
-# https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF
-# https://unsloth.ai/docs/models/qwen3.5
-hf download \
-"unsloth/Qwen3.5-35B-A3B-GGUF" \
---include "Qwen3.5-35B-A3B-Q4_K_M.gguf" \
---local-dir "$HOME/llm"
-
-# Download OmniCoder 9B
-# https://huggingface.co/Tesslate/OmniCoder-9B-GGUF
-hf download \
-"Tesslate/OmniCoder-9B-GGUF" \
---include "omnicoder-9b-q5_k_m.gguf" \
---local-dir "$HOME/llm"
-
-# Download GLM-4.7-Flash
-# https://huggingface.co/unsloth/GLM-4.7-Flash-GGUF
-# https://unsloth.ai/docs/models/glm-4.7-flash
-hf download \
-"unsloth/GLM-4.7-Flash-GGUF" \
---include "GLM-4.7-Flash-Q4_K_M.gguf" \
---local-dir "$HOME/llm"
-
-# Download GPT OSS 20b
-# https://huggingface.co/unsloth/gpt-oss-20b-GGUF
-# https://unsloth.ai/docs/models/gpt-oss-how-to-run-and-fine-tune
-hf download \
-"unsloth/gpt-oss-20b-GGUF" \
---include "gpt-oss-20b-F16.gguf" \
---local-dir "$HOME/llm"
-
-# Download Qwen3.5 35B A3B
-# https://huggingface.co/mradermacher/Qwen3.5-35B-A3B-heretic-Opus-4.6-Distilled-i1-GGUF
-hf download \
-"mradermacher/Qwen3.5-35B-A3B-heretic-Opus-4.6-Distilled-i1-GGUF" \
---include "Qwen3.5-35B-A3B-heretic-Opus-4.6-Distilled.i1-Q4_K_M.gguf" \
---local-dir "$HOME/llm"
-
-# Configure aliases
-tee ${HOME}/.zshrc.d/llm << 'EOF'
-LLAMA_COMMON="--threads 8 --threads-batch 8 --n-gpu-layers 99 --jinja --batch-size 4096 --ubatch-size 2048 --cache-type-k q8_0 --cache-type-v q8_0"
-
-alias devstral="llama-server $LLAMA_COMMON \
-  --model \$HOME/llm/Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf \
-  --alias devstral \
-  --ctx-size 65536 \
-  --temp 0.15 --min_p 0.01"
-
-alias qwen3.5-9b="llama-server $LLAMA_COMMON \
-  --model \$HOME/llm/Qwen3.5-9B-Q5_K_M.gguf \
-  --alias qwen3.5-9b \
-  --ctx-size 65536 \
-  --temp 1.0 --min-p 0.0 --top-p 0.95 --top-k 20 \
-  --repeat-penalty 1.00 --presence-penalty 1.5 \
-  --chat-template-kwargs '{\"enable_thinking\":false}' \
-  --flash-attn on"
-
-alias qwen3.5-35b-a3b="llama-server $LLAMA_COMMON \
-  --model \$HOME/llm/Qwen3.5-35B-A3B-Q4_K_M.gguf \
-  --alias qwen3.5-35b-a3b \
-  --ctx-size 65536 \
-  --temp 0.6 --min-p 0.0 --top-p 0.95 --top-k 20 \
-  --repeat-penalty 1.00 --presence-penalty 0.0 \
-  --chat-template-kwargs '{\"enable_thinking\":true}' \
-  --flash-attn on"
-
-alias qwen3.5-35b-a3b-opus="llama-server $LLAMA_COMMON \
-  --model \$HOME/llm/Qwen3.5-35B-A3B-heretic-Opus-4.6-Distilled.i1-Q4_K_M.gguf \
-  --alias qwen3.5-35b-a3b-opus \
-  --ctx-size 65536 \
-  --temp 0.6 --min-p 0.0 --top-p 0.95 --top-k 20 \
-  --repeat-penalty 1.00 --presence-penalty 0.0 \
-  --chat-template-kwargs '{\"enable_thinking\":true}' \
-  --flash-attn on"
-
-alias omnicoder="llama-server $LLAMA_COMMON \
-  --model \$HOME/llm/omnicoder-9b-q5_k_m.gguf \
-  --alias omnicoder \
-  --ctx-size 65536 \
-  --temp 0.4 --min-p 0.01 --top-p 0.95 --top-k 20 \
-  --presence-penalty 0.0 \
-  --chat-template-kwargs '{\"enable_thinking\":false}' \
-  --flash-attn on"
-
-alias glm-4.7-flash="llama-server $LLAMA_COMMON \
-  --model \$HOME/llm/GLM-4.7-Flash-Q4_K_M.gguf \
-  --alias gml-4.7-flash \
-  --ctx-size 65536 \
-  --temp 0.7 --min-p 0.01 --top-p 1.0 \
-  --repeat-penalty 1.00 \
-  --flash-attn on"
-
-alias gpt-oss-20b="llama-server $LLAMA_COMMON \
-  --model \$HOME/llm/gpt-oss-20b-F16.gguf \
-  --alias gpt-oss-20b \
-  --ctx-size 65536 \
-  --temp 1.0 --top-p 1.0 --top-k 0 \
-  --flash-attn on"
-EOF
-
-################################################
-##### AI development
-################################################
-
-# qdrant (vectorial database)
-podman volume create qdrant_data
-
-podman run -d \
-  --name qdrant \
-  --restart=always \
-  -p 6333:6333 \
-  -v qdrant_data:/qdrant/storage \
-  qdrant/qdrant
-
-# Install specify
-# https://github.com/github/spec-kit
-brew install specify
-
-# Install opencode
-# https://github.com/anomalyco/opencode
-brew install anomalyco/tap/opencode
