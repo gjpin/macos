@@ -87,13 +87,13 @@ hf download \
 
 # Configure aliases
 tee ${HOME}/.zshrc.d/llm << 'EOF'
-LLAMA_COMMON="--threads 8 --threads-batch 8 --n-gpu-layers 99 --jinja --batch-size 4096 --ubatch-size 2048 --cache-type-k q8_0 --cache-type-v q8_0 --flash-attn on"
+LLAMA_COMMON="--threads 8 --threads-batch 8 --n-gpu-layers 99 --jinja --batch-size 4096 --ubatch-size 2048 --cache-type-k q8_0 --cache-type-v q8_0 --flash-attn on -np 1"
 
 alias devstral="llama-server $LLAMA_COMMON \
   --model \$HOME/llm/Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf \
   --alias devstral \
   --ctx-size 65536 \
-  --temp 0.15 --min_p 0.01"
+  --temp 0.15 --min-p 0.01"
 
 alias qwen3.5-9b="llama-server $LLAMA_COMMON \
   --model \$HOME/llm/Qwen3.5-9B-Q5_K_M.gguf \
@@ -138,13 +138,13 @@ alias gpt-oss-20b="llama-server $LLAMA_COMMON \
   --model \$HOME/llm/gpt-oss-20b-F16.gguf \
   --alias gpt-oss-20b \
   --ctx-size 65536 \
-  --temp 1.0 --top-p 1.0 --top-k 0"
+  --temp 1.0 --top-p 1.0 --top-k 0 --min-p 0.0"
 
 alias nemotron-cascade-2-30b-a3b="llama-server $LLAMA_COMMON \
   --model \$HOME/llm/Nemotron-Cascade-2-30B-A3B.Q4_K_M.gguf \
   --alias nemotron-cascade-2-30b-a3b \
   --ctx-size 65536 \
-  --temp 1.0 --min-p 0.0 --top-p 0.95 --top-k 0 \
+  --temp 1.0 --top-p 0.95 --top-k 0 --min-p 0.0 \
   --repeat-penalty 1.00 --presence-penalty 0.0 \
   --chat-template-kwargs '{\"enable_thinking\":true}'"
 
@@ -152,14 +152,14 @@ alias gemma-4-26b-a4b="llama-server $LLAMA_COMMON \
   --model \$HOME/llm/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf \
   --alias gemma-4-26b-a4b \
   --ctx-size 65536 \
-  --temp 1.0 --top-p 0.95 --top-k 64 \
+  --temp 1.0 --top-p 0.95 --top-k 64 --min-p 0.0 \
   --chat-template-kwargs '{\"enable_thinking\":true}'"
 
 alias gemma-4-31b="llama-server $LLAMA_COMMON \
   --model \$HOME/llm/gemma-4-31B-it-Q4_K_M.gguf \
   --alias gemma-4-31b \
   --ctx-size 65536 \
-  --temp 1.0 --top-p 0.95 --top-k 64 \
+  --temp 1.0 --top-p 0.95 --top-k 64 --min-p 0.0 \
   --chat-template-kwargs '{\"enable_thinking\":true}'"
 EOF
 
