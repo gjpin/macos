@@ -115,6 +115,20 @@ cp llama.cpp/build/bin/llama-* ~/.local/bin
 ##### Development
 ################################################
 
+# Install Python tools
+brew install ruff ty uv
+
+# Install golang
+brew install go
+tee ${HOME}/.zshrc.d/go << EOF
+export GOPATH=${HOME}/.go
+PATH="$(go env GOPATH)/bin:\$PATH"
+EOF
+
+# Install node
+brew install node npm pnpm
+npm config set ignore-scripts true
+
 # Install dotnet
 brew install dotnet@10
 tee ${HOME}/.zshrc.d/dotnet << 'EOF'

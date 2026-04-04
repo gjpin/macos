@@ -94,23 +94,23 @@ brew install --cask freecad
 ##### Development
 ################################################
 
-# Install Python tools
-brew install ruff ty uv
-
-# Install golang
-brew install go
-tee ${HOME}/.zshrc.d/go << EOF
-export GOPATH=${HOME}/.go
-PATH="$(go env GOPATH)/bin:\$PATH"
-EOF
-
 # Install Android tools
 brew install --cask android-commandlinetools
 brew install --cask android-platform-tools
 
-# Install node
-brew install node npm pnpm
-npm config set ignore-scripts true
+# Build dev image
+container build -t dev dev/
+
+# Dev alias
+tee ${HOME}/.zshrc.d/dev << EOF
+alias dev='container run --rm -it \\
+  --name dev \\
+  --user dev \\
+  -v "\${HOME}/.ssh:/home/dev/.ssh:ro" \\
+  -v "\$(pwd):/workspace" \\
+  -w /workspace \\
+  dev'
+EOF
 
 ################################################
 ##### SSH
