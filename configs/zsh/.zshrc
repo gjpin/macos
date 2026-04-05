@@ -58,7 +58,7 @@ bindkey "^[[3~" delete-char
 bindkey "^?" backward-delete-char
 
 # History
-HISTSIZE=5000
+HISTSIZE=10000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase

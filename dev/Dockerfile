@@ -1,6 +1,10 @@
-FROM quay.io/fedora/fedora:45
+FROM quay.io/fedora/fedora:44
 
 WORKDIR /workspace
+
+################################################
+##### System
+################################################
 
 # System packages
 RUN dnf upgrade -y --refresh && \
@@ -17,7 +21,18 @@ RUN dnf upgrade -y --refresh && \
     python3 \
     python3-pip \
     make \
-    cmake
+    cmake \
+    ripgrep \
+    tree-sitter-cli \
+    fd-find \
+    git \
+    fzf \
+    clang \
+    tar \
+    curl \
+    zsh
+
+RUN dnf install -y neovim --setopt=install_weak_deps=False
 
 # User setup
 RUN useradd -m -s /bin/bash -G wheel dev && \
@@ -27,12 +42,23 @@ RUN useradd -m -s /bin/bash -G wheel dev && \
     echo -e "root:1:65535\ndev:1:999\ndev:1001:64535" > /etc/subuid && \
     echo -e "root:1:65535\ndev:1:999\ndev:1001:64535" > /etc/subgid
 
-# User environment
+################################################
+##### User
+################################################
+
 USER dev
 
 ENV HOME=/home/dev \
     NPM_CONFIG_PREFIX=/home/dev/.npm-global \
     GOPATH=/home/dev/.go \
     PATH=$PATH:/home/dev/.npm-global/bin:/home/dev/.go/bin
+
+# Lazygit
+# https://github.com/jesseduffield/lazygit
+RUN go install github.com/jesseduffield/lazygit@latest
+
+# Neovim / lazyvim
+# https://www.lazyvim.org/
+RUN git clone https://github.com/LazyVim/starter ~/.config/nvim
 
 ENTRYPOINT ["bash"]

@@ -70,30 +70,12 @@ rustup update
 EOF
 
 ################################################
-##### Podman
+##### Apple Containers
 ################################################
 
-# References:
-# https://docs.podman.io/en/v5.8.1/markdown/podman-machine-init.1.html
-# https://github.com/containers/krunkit
-
-# Install krunkit
-brew tap slp/krun
-brew install krunkit
-
-# Install Podman
-brew install podman podman-compose
-
-# Set Podman VM specs
-podman machine init --cpus 2 --memory 4096
-
-# Install system helper service (provides better Docker compatibility)
-sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
-
-# Set Docker host path
-tee ${HOME}/.zshrc.d/podman << EOF
-alias docker=podman
-EOF
+brew install container
+brew services start container
+container system kernel set --recommended
 
 ################################################
 ##### llama.cpp

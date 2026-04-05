@@ -98,20 +98,6 @@ brew install --cask freecad
 brew install --cask android-commandlinetools
 brew install --cask android-platform-tools
 
-# Build dev image
-container build -t dev dev/
-
-# Dev alias
-tee ${HOME}/.zshrc.d/dev << EOF
-alias dev='container run --rm -it \\
-  --name dev \\
-  --user dev \\
-  -v "\${HOME}/.ssh:/home/dev/.ssh:ro" \\
-  -v "\$(pwd):/workspace" \\
-  -w /workspace \\
-  dev'
-EOF
-
 ################################################
 ##### SSH
 ################################################
@@ -201,47 +187,101 @@ sudo mkdir /etc/wireguard
 # Configure LaunchDaemon for wg0
 sudo tee /Library/LaunchDaemons/com.wireguard.wg0.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"\>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-    <dict>
-        <key>Label</key>
-        <string>com.wireguard.wg0</string>
-        <key>ProgramArguments</key>
-        <array>
-            <string>/opt/homebrew/bin/wg-quick</string>
-            <string>up</string>
-            <string>/etc/wireguard/wg0.conf</string>
-        </array>
-        <key>KeepAlive</key>
-            <dict>
-                <key>NetworkState</key>
-                <true/>
-            </dict>
-        <key>RunAtLoad</key>
-        <true/>
-        <key>StandardErrorPath</key>
-        <string>/opt/homebrew/var/log/wireguard.err</string>
-        <key>EnvironmentVariables</key>
-        <dict>
-            <key>PATH</key>
-            <!-- Adds in user-specific and Homebrew bin directories to start of PATH -->
-            <string>${HOME}/.local/bin:/opt/homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
-        </dict>
-    </dict>
+<dict>
+    <key>Label</key>
+    <string>com.wireguard.wg0</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/wg-quick</string>
+        <string>up</string>
+        <string>/etc/wireguard/wg0.conf</string>
+    </array>
+
+    <key>KeepAlive</key>
+    <false/>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StartInterval</key>
+    <integer>10</integer>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/wireguard.err</string>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/wireguard.out</string>
+</dict>
 </plist>
 EOF
 
 # Enable LaunchDaemon
-sudo launchctl enable system/com.wireguard.wg0
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
+sudo launchctl enable system/com.wireguard.wg0
 
 ################################################
-##### Apple Containers
+##### Podman
 ################################################
 
-brew install container
-brew services start container
-container system kernel set --recommended
+# References:
+# https://docs.podman.io/en/v5.8.1/markdown/podman-machine-init.1.html
+# https://github.com/containers/krunkit
+
+# Install krunkit
+# brew tap slp/krun
+# brew install krunkit
+
+# Install Podman
+brew install podman podman-compose
+
+# Set Podman VM specs
+podman machine init --cpus 4 --memory 4096
+
+# Install system helper service (provides better Docker compatibility)
+sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
+
+# Set Docker host path
+tee ${HOME}/.zshrc.d/podman << EOF
+alias docker=podman
+EOF
+
+# Configure LaunchDaemon for podman machine
+tee ~/Library/LaunchAgents/io.podman.machine.plist << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>io.podman.machine</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/podman</string>
+        <string>machine</string>
+        <string>start</string>
+    </array>
+
+    <key>KeepAlive</key>
+    <false/>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/podman.err</string>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/wireguard.out</string>
+</dict>
+</plist>
+EOF
+
+# Enable LaunchDaemon
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/io.podman.machine.plist
+launchctl enable gui/$(id -u)/io.podman.machine
 
 ################################################
 ##### zsh
