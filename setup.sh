@@ -87,6 +87,9 @@ brew install --cask freecad
 brew install --cask android-commandlinetools
 brew install --cask android-platform-tools
 
+# Set default branch name
+git config --global init.defaultBranch main
+
 ################################################
 ##### SSH
 ################################################
