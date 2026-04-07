@@ -34,19 +34,6 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 sudo chown -R $USER /opt/homebrew/var/log
 chmod u+w /opt/homebrew/var/log
 
-# Updater helper
-tee ${HOME}/.local/bin/update-all << 'EOF'
-#!/usr/bin/env zsh
-
-# Update brew repos
-brew update
-
-# Update brew packages
-brew upgrade
-EOF
-
-chmod +x ${HOME}/.local/bin/update-all
-
 ################################################
 ##### Common applications
 ################################################
@@ -58,7 +45,8 @@ touch ${HOME}/.hushlogin
 mkdir -p \
     ${HOME}/.configs \
     ${HOME}/.zshrc.d \
-    ${HOME}/src
+    ${HOME}/.local/bin \
+    ${HOME}/src    
 
 # Install common applications
 brew install \
@@ -83,8 +71,9 @@ brew install --cask brave-browser
 brew install --cask obsidian
 brew install --cask thunderbird
 brew install --cask bitwarden
-brew install --cask lulu
-brew install --cask lm-studio
+brew install --cask temurin
+# brew install --cask lulu
+# brew install --cask lm-studio
 
 # Install 3D printing apps
 brew install --cask orcaslicer
@@ -214,6 +203,12 @@ sudo tee /Library/LaunchDaemons/com.wireguard.wg0.plist << EOF
 
     <key>StandardOutPath</key>
     <string>/tmp/wireguard.out</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
 </dict>
 </plist>
 EOF
@@ -303,13 +298,26 @@ fi
 export PATH
 EOF
 
+# Updater helper
+tee ${HOME}/.local/bin/update-all << 'EOF'
+#!/usr/bin/env zsh
+
+# Update brew repos
+brew update
+
+# Update brew packages
+brew upgrade
+EOF
+
+chmod +x ${HOME}/.local/bin/update-all
+
 ################################################
 ##### Kubernetes / Cloud
 ################################################
 
 # Install Kubernetes tools
-brew install kubernetes-cli helm kubectx k9s cilium-cli argocd
-brew install --cask headlamp
+brew install kubernetes-cli helm kubectx k9s
+# brew install --cask headlamp
 
 tee ${HOME}/.zshrc.d/kubernetes << EOF
 # Aliases
@@ -327,10 +335,10 @@ EOF
 brew install opentofu
 
 # Install minikube
-brew install minikube vfkit
-minikube config set driver vfkit
-minikube config set cpus 2
-minikube config set memory 4096
+# brew install minikube vfkit
+# minikube config set driver vfkit
+# minikube config set cpus 2
+# minikube config set memory 4096
 
 ################################################
 ##### Visual Studio Code
@@ -344,11 +352,11 @@ mkdir -p "${HOME}/Library/Application Support/Code/User"
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/vscode/settings.json -o "${HOME}/Library/Application Support/Code/User/settings.json"
 
 # Install extensions
-code --install-extension kilocode.kilo-code
-code --install-extension golang.go
 code --install-extension ms-vscode-remote.remote-containers
-code --install-extension astral-sh.ty
-code --install-extension charliermarsh.ruff
+# code --install-extension kilocode.kilo-code
+# code --install-extension golang.go
+# code --install-extension astral-sh.ty
+# code --install-extension charliermarsh.ruff
 # code --install-extension ms-vscode.remote-explorer
 # code --install-extension ms-vscode-remote.remote-ssh
 
@@ -385,19 +393,6 @@ curl https://addons.mozilla.org/firefox/downloads/file/3932862/multi_account_con
 
 # Import Firefox configs
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/firefox/user.js -o "${FIREFOX_PROFILE_PATH}/user.js"
-
-################################################
-##### Bluesnooze (Sleeping Mac = Bluetooth off)
-################################################
-
-# References:
-# https://github.com/odlp/bluesnooze
-
-# Install Bluesnooze
-brew install --cask bluesnooze
-
-# Hide Bluesnooze icon
-defaults write com.oliverpeate.Bluesnooze hideIcon -bool true && killall Bluesnooze
 
 ################################################
 ##### System Preferences

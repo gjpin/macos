@@ -1,4 +1,17 @@
 ################################################
+##### Bluesnooze (Sleeping Mac = Bluetooth off)
+################################################
+
+# References:
+# https://github.com/odlp/bluesnooze
+
+# Install Bluesnooze
+brew install --cask bluesnooze
+
+# Hide Bluesnooze icon
+defaults write com.oliverpeate.Bluesnooze hideIcon -bool true && killall Bluesnooze
+
+################################################
 ##### SOPS
 ################################################
 
