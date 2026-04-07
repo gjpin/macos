@@ -235,6 +235,9 @@ sudo launchctl enable system/com.wireguard.wg0
 # Install Podman
 brew install podman podman-compose
 
+# Install Podman desktop
+brew install --cask podman-desktop
+
 # Set Podman VM specs
 podman machine init --cpus 4 --memory 4096
 
@@ -245,41 +248,6 @@ sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
 tee ${HOME}/.zshrc.d/podman << EOF
 alias docker=podman
 EOF
-
-# Configure LaunchDaemon for podman machine
-tee ~/Library/LaunchAgents/io.podman.machine.plist << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>io.podman.machine</string>
-
-    <key>ProgramArguments</key>
-    <array>
-        <string>/opt/homebrew/bin/podman</string>
-        <string>machine</string>
-        <string>start</string>
-    </array>
-
-    <key>KeepAlive</key>
-    <false/>
-
-    <key>RunAtLoad</key>
-    <true/>
-
-    <key>StandardErrorPath</key>
-    <string>/tmp/podman.err</string>
-
-    <key>StandardOutPath</key>
-    <string>/tmp/wireguard.out</string>
-</dict>
-</plist>
-EOF
-
-# Enable LaunchDaemon
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/io.podman.machine.plist
-launchctl enable gui/$(id -u)/io.podman.machine
 
 ################################################
 ##### zsh
