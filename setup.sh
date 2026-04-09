@@ -287,7 +287,7 @@ chmod +x ${HOME}/.local/bin/update-all
 ################################################
 
 # Install Kubernetes tools
-brew install kubernetes-cli helm kubectx k9s
+brew install kubernetes-cli helm kubectx k9s talosctl
 # brew install --cask headlamp
 
 tee ${HOME}/.zshrc.d/kubernetes << EOF
