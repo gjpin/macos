@@ -305,6 +305,10 @@ EOF
 # Install OpenTofu
 brew install opentofu
 
+# Install Packer
+brew tap hashicorp/tap
+brew install hashicorp/tap/packer
+
 # Install minikube
 # brew install minikube vfkit
 # minikube config set driver vfkit
