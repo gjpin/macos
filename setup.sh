@@ -63,7 +63,8 @@ brew install \
     pipx \
     jsonnet \
     cmake \
-    make
+    make \
+    gnupg
 
 # Install casks
 brew install --cask spotify
