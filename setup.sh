@@ -75,6 +75,7 @@ brew install --cask bitwarden
 brew install --cask temurin
 brew install --cask lulu
 brew install --cask lm-studio
+brew install --cask handy
 
 # Install 3D printing apps
 brew install --cask orcaslicer
