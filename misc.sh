@@ -243,20 +243,6 @@ sed -i '' '/mounts:/a\
 limactl start-at-login docker --enabled
 
 ################################################
-##### Zed
-################################################
-
-# Install Zed
-brew install --cask zed
-
-# Configure Zed
-mkdir -p ${HOME}/.config/zed/themes
-curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zed/settings.json -o ${HOME}/.config/zed/settings.json
-
-# Download VSCode Dark Modern theme
-curl https://raw.githubusercontent.com/kcamcam/vscode_dark_modern.zed/refs/heads/main/themes/vscode-dark-modern.json -o ${HOME}/.config/zed/themes/vscode-dark-modern.json
-
-################################################
 ##### Preferences
 ################################################
 
