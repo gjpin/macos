@@ -92,6 +92,52 @@ brew install --cask android-platform-tools
 # Set default branch name
 git config --global init.defaultBranch main
 
+# Install Python tools
+brew install ruff ty uv
+
+# Install golang
+brew install go
+
+tee ${HOME}/.zshrc.d/go << EOF
+export GOPATH=${HOME}/.go
+PATH="$(go env GOPATH)/bin:\$PATH"
+EOF
+
+# Install node and package managers
+brew install node npm pnpm
+
+# Configure npm
+npm config set ignore-scripts true
+
+mkdir -p ${HOME}/.npm-global
+
+npm config set prefix "${HOME}/.npm-global"
+
+tee ${HOME}/.zshrc.d/npm << 'EOF'
+export PATH=$HOME/.npm-global/bin:$PATH
+EOF
+
+# Configure pnpm
+mkdir -p ${HOME}/.pnpm/bin
+
+tee ${HOME}/.zshrc.d/pnpm << 'EOF'
+export PNPM_HOME="$HOME/.pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+EOF
+
+# Install Temurin JDK
+brew install --cask temurin
+
+# Install PI Coding Agent
+pnpm add -g --ignore-scripts @earendil-works/pi-coding-agent
+
+# Install Semble
+# https://github.com/MinishLab/semble
+# uv tool install semble
+
 ################################################
 ##### SSH
 ################################################
@@ -280,6 +326,12 @@ brew update
 
 # Update brew packages
 brew upgrade
+
+# Update pip packages
+uv tool upgrade --all
+
+# Update pnpm packages
+pnpm up -g --latest
 EOF
 
 chmod +x ${HOME}/.local/bin/update-all
