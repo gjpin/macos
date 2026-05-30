@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# install-dex2jar.sh — Download, install, and update dex2jar from GitHub releases
+# dex2jar-manager.sh — Download, install, and update dex2jar from GitHub releases
 # Usage:
-#   ./dex2jar.sh install    — fresh install (skip if already installed)
-#   ./dex2jar.sh update     — check for newer release and update in-place if outdated
-#   source dex2jar.sh && update_dex2jar   — call update from another script
+#   ./dex2jar-manager.sh install    — fresh install (skip if already installed)
+#   ./dex2jar-manager.sh update     — check for newer release and update in-place if outdated
+#   source dex2jar-manager.sh && update_dex2jar   — call update from another script
 set -euo pipefail
 
 REPO="ThexXTURBOXx/dex2jar"

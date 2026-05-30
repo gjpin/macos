@@ -147,8 +147,8 @@ brew install apktool
 
 # Install dex2jar
 # https://github.com/ThexXTURBOXx/dex2jar
-source ./dex2jar.sh && install_dex2jar
-cp ./dex2jar.sh ${HOME}/.local/bin/dex2jar.sh && chmod +x ${HOME}/.local/bin/dex2jar.sh
+source ./dex2jar-manager.sh && install_dex2jar
+cp ./dex2jar-manager.sh ${HOME}/.local/bin/dex2jar-manager.sh && chmod +x ${HOME}/.local/bin/dex2jar-manager.sh
 
 ################################################
 ##### SSH
@@ -346,7 +346,7 @@ uv tool upgrade --all
 pnpm up -g --latest
 
 # Update dex2jar
-${HOME}/.local/bin/dex2jar.sh update
+${HOME}/.local/bin/dex2jar-manager.sh update
 EOF
 
 chmod +x ${HOME}/.local/bin/update-all
