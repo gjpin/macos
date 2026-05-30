@@ -85,10 +85,6 @@ brew install --cask freecad
 ##### Development
 ################################################
 
-# Install Android tools
-brew install --cask android-commandlinetools
-brew install --cask android-platform-tools
-
 # Set default branch name
 git config --global init.defaultBranch main
 
@@ -137,6 +133,22 @@ pnpm add -g --ignore-scripts @earendil-works/pi-coding-agent
 # Install Semble
 # https://github.com/MinishLab/semble
 # uv tool install semble
+
+################################################
+##### Android
+################################################
+
+# Install Android tools
+brew install --cask android-commandlinetools
+brew install --cask android-platform-tools
+brew install vineflower # alternative: fernflower
+brew install jadx
+brew install apktool
+
+# Install dex2jar
+# https://github.com/ThexXTURBOXx/dex2jar
+source ./dex2jar.sh && install_dex2jar
+cp ./dex2jar.sh ${HOME}/.local/bin/dex2jar.sh && chmod +x ${HOME}/.local/bin/dex2jar.sh
 
 ################################################
 ##### SSH
@@ -332,6 +344,9 @@ uv tool upgrade --all
 
 # Update pnpm packages
 pnpm up -g --latest
+
+# Update dex2jar
+${HOME}/.local/bin/dex2jar.sh update
 EOF
 
 chmod +x ${HOME}/.local/bin/update-all
