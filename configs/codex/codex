@@ -221,7 +221,9 @@ codex_container_main() {
     workspace="$(_codex_workspace)" || return
     workspace_id="$(printf '%s' "${workspace}" | _codex_sha256 | awk '{print substr($1, 1, 24)}')" || return 1
     state_volume="codex-home-${workspace_id}"
-    container_workspace="${workspace}"
+    # Keep the host's absolute path (and therefore its username) out of the
+    # container while retaining the mounted directory's name.
+    container_workspace="/workspace/$(basename -- "${workspace}")" || return 1
     container_name="$(_codex_container_name "${workspace}")" || return 1
 
     _codex_init_shared_state || return
