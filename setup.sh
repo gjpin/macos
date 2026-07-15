@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+
+# Resolve repository-owned files relative to this script, regardless of the
+# directory from which setup.sh is invoked.
+SETUP_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+
 ################################################
 ##### Dev and compatibility tools
 ################################################
@@ -88,6 +94,9 @@ brew install --cask freecad
 # Set default branch name
 git config --global init.defaultBranch main
 
+# Install BATS
+brew install bats-core
+
 # Install Python tools
 brew install ruff ty uv
 
@@ -130,10 +139,6 @@ brew install --cask temurin
 # Install PI Coding Agent
 pnpm add -g --ignore-scripts @earendil-works/pi-coding-agent
 
-# Install Semble
-# https://github.com/MinishLab/semble
-# uv tool install semble
-
 ################################################
 ##### Android
 ################################################
@@ -149,6 +154,11 @@ brew install apktool
 # https://github.com/ThexXTURBOXx/dex2jar
 source ./dex2jar-manager.sh && install_dex2jar
 cp ./dex2jar-manager.sh ${HOME}/.local/bin/dex2jar-manager.sh && chmod +x ${HOME}/.local/bin/dex2jar-manager.sh
+
+# Required for agent skill
+tee ${HOME}/.zshrc.d/vineflower << 'EOF'
+export FERNFLOWER_JAR_PATH="/opt/homebrew/bin/vineflower"
+EOF
 
 ################################################
 ##### SSH
@@ -298,8 +308,11 @@ brew install podman podman-compose
 # Install Podman desktop
 brew install --cask podman-desktop
 
-# Set Podman VM specs
-podman machine init --cpus 4 --memory 4096
+# Init podman machine
+podman machine init \
+    --cpus 4 \
+    --memory 8192 \
+    --now
 
 # Install system helper service (provides better Docker compatibility)
 sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
@@ -308,6 +321,36 @@ sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
 tee ${HOME}/.zshrc.d/podman << EOF
 alias docker=podman
 EOF
+
+################################################
+##### Codex container
+################################################
+
+# Install the container-backed Codex wrapper and its supporting files.
+mkdir -p \
+    "${HOME}/.local/bin" \
+    "${HOME}/.local/share/codex-container" \
+    "${HOME}/.codex" \
+    "${HOME}/.agents/skills"
+
+install -m 0755 "${SETUP_DIR}/configs/codex/codex" "${HOME}/.local/bin/codex"
+install -m 0644 \
+    "${SETUP_DIR}/configs/codex/Containerfile" \
+    "${HOME}/.local/share/codex-container/Containerfile"
+install -m 0600 "${SETUP_DIR}/configs/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md"
+
+(
+    umask 077
+    if [ ! -e "${HOME}/.codex/auth.json" ]; then
+        printf '{}\n' > "${HOME}/.codex/auth.json"
+    fi
+    if [ ! -e "${HOME}/.codex/config.toml" ]; then
+        : > "${HOME}/.codex/config.toml"
+    fi
+)
+
+chmod 0700 "${HOME}/.codex" "${HOME}/.agents" "${HOME}/.agents/skills"
+chmod 0600 "${HOME}/.codex/auth.json" "${HOME}/.codex/config.toml" "${HOME}/.codex/AGENTS.md"
 
 ################################################
 ##### zsh
@@ -343,7 +386,10 @@ brew upgrade
 uv tool upgrade --all
 
 # Update pnpm packages
-pnpm up -g --latest
+# pnpm up -g --latest
+
+# Update Pi Coding Agent
+# pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @earendil-works/pi-coding-agent
 
 # Update dex2jar
 ${HOME}/.local/bin/dex2jar-manager.sh update

@@ -1,0 +1,114 @@
+FROM --platform=linux/arm64 registry.fedoraproject.org/fedora:44
+
+ARG CODEX_UPDATE_DAY=unknown
+
+RUN dnf --setopt=install_weak_deps=False --setopt=keepcache=False install -y \
+        bash \
+        bat \
+        bats \
+        bzip2 \
+        ca-certificates \
+        chromium \
+        clang \
+        clang-tools-extra \
+        cmake \
+        coreutils \
+        curl \
+        diffutils \
+        fd-find \
+        file \
+        findutils \
+        gawk \
+        gcc \
+        gcc-c++ \
+        gdb \
+        git \
+        git-lfs \
+        golang \
+        golang-x-tools-gopls \
+        grep \
+        gzip \
+        iproute \
+        iputils \
+        jq \
+        just \
+        less \
+        lld \
+        lldb \
+        llvm \
+        make \
+        meson \
+        mold \
+        ninja-build \
+        nodejs \
+        npm \
+        openssh-clients \
+        patch \
+        pkgconf-pkg-config \
+        procps-ng \
+        python3 \
+        python3-devel \
+        rust \
+        cargo \
+        scons \
+        sed \
+        ShellCheck \
+        shfmt \
+        sqlite \
+        strace \
+        tar \
+        unzip \
+        util-linux \
+        uv \
+        wget \
+        which \
+        xz \
+        zip \
+        zstd \
+    && ln -s /usr/bin/chromium-browser /usr/bin/chromium \
+    && dnf clean all \
+    && rm -rf /var/cache/dnf
+
+RUN npm install --global --ignore-scripts \
+        bash-language-server \
+        eslint \
+        vscode-langservers-extracted \
+        typescript \
+        typescript-language-server \
+        @vue/language-server \
+        yaml-language-server \
+        pnpm \
+    && uv venv /opt/python-tools \
+    && uv pip install --python /opt/python-tools/bin/python \
+        playwright \
+        pytest-playwright \
+        'python-lsp-server[all]' \
+        ruff \
+        ty
+
+RUN useradd --create-home --uid 1000 --user-group --shell /bin/bash codex \
+    && install -d -o codex -g codex -m 0700 \
+        /home/codex/.agents/skills \
+        /home/codex/.cache \
+        /home/codex/.codex \
+        /home/codex/.config \
+        /home/codex/.local/state \
+    && curl -fsSL https://chatgpt.com/codex/install.sh | \
+        CODEX_HOME=/opt/codex \
+        CODEX_INSTALL_DIR=/usr/local/bin \
+        CODEX_NON_INTERACTIVE=1 \
+        sh \
+    && codex --version \
+    && rm -rf /root/.cache \
+    && printf '%s\n' "${CODEX_UPDATE_DAY}" > /usr/local/share/codex-image-update-day
+
+ENV HOME=/home/codex \
+    PATH=/opt/python-tools/bin:/usr/local/bin:/usr/bin:/bin \
+    XDG_CACHE_HOME=/home/codex/.cache \
+    XDG_CONFIG_HOME=/home/codex/.config \
+    XDG_STATE_HOME=/home/codex/.local/state
+
+USER 1000:1000
+WORKDIR /workspace
+
+ENTRYPOINT ["codex", "--dangerously-bypass-approvals-and-sandbox"]

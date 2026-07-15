@@ -1,4 +1,7 @@
-# How to
+# macOS workstation setup
+
+## How to
+
 1. Update and restart MacOS
 2. Add Wireguard config file to /etc/wireguard/wg0.conf
 3. Run setup.sh
@@ -22,8 +25,10 @@
    * Advanced:
       * Scroll wheel sends arrow keys when in alternate screen mode: yes
 
-# Tips
-## Remove lingering login items and others
+## Tips
+
+### Remove lingering login items and others
+
 - Check directories:
    - /Library/LaunchDaemons
    - ~/Library/LaunchAgents

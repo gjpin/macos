@@ -1,0 +1,257 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+_codex_err() {
+    printf 'codex: %s\n' "$*" >&2
+}
+
+_codex_canonical_dir() {
+    (cd -P -- "$1" 2>/dev/null && pwd -P)
+}
+
+_codex_workspace() {
+    local workspace home
+
+    workspace="$(_codex_canonical_dir "${PWD}")" || {
+        _codex_err "cannot resolve the current working directory: ${PWD}"
+        return 1
+    }
+    home="$(_codex_canonical_dir "${HOME}")" || {
+        _codex_err "cannot resolve HOME: ${HOME}"
+        return 1
+    }
+
+    if [ "${workspace}" = / ]; then
+        _codex_err "refusing to mount ${workspace} because it would expose HOME (${home})"
+        return 1
+    fi
+    case "${home}/" in
+        "${workspace}/"*)
+            _codex_err "refusing to mount ${workspace} because it would expose HOME (${home})"
+            return 1
+            ;;
+    esac
+
+    printf '%s\n' "${workspace}"
+}
+
+_codex_sha256() {
+    if command -v shasum >/dev/null 2>&1; then
+        shasum -a 256
+    elif command -v sha256sum >/dev/null 2>&1; then
+        sha256sum
+    else
+        openssl dgst -sha256 | sed 's/^.*= //'
+    fi
+}
+
+_codex_file_owner() {
+    if [ "$(uname -s)" = Darwin ]; then
+        /usr/bin/stat -f %u "$1"
+    else
+        stat -c %u "$1"
+    fi
+}
+
+_codex_validate_global_agents() {
+    local agents_file="$1" owner uid
+
+    [ -f "${agents_file}" ] && [ ! -L "${agents_file}" ] || {
+        _codex_err "global instructions are not a regular file: ${agents_file}"
+        return 1
+    }
+    owner="$(_codex_file_owner "${agents_file}")" || {
+        _codex_err "cannot determine the owner of global instructions: ${agents_file}"
+        return 1
+    }
+    uid="$(id -u)" || return 1
+    [ "${owner}" = "${uid}" ] || {
+        _codex_err "global instructions are not owned by the current user: ${agents_file}"
+        return 1
+    }
+}
+
+_codex_init_shared_state() (
+    local codex_dir="${HOME}/.codex"
+    local agents_dir="${HOME}/.agents"
+    local auth_file="${HOME}/.codex/auth.json"
+    local config_file="${HOME}/.codex/config.toml"
+
+    umask 077
+    install -d -m 0700 "${codex_dir}" "${agents_dir}" "${agents_dir}/skills" || return 1
+    if [ ! -e "${auth_file}" ]; then
+        printf '{}\n' > "${auth_file}" || return 1
+    fi
+    if [ ! -e "${config_file}" ]; then
+        : > "${config_file}" || return 1
+    fi
+    [ -f "${auth_file}" ] && [ ! -L "${auth_file}" ] || {
+        _codex_err "shared auth path is not a regular file: ${auth_file}"
+        return 1
+    }
+    [ -f "${config_file}" ] && [ ! -L "${config_file}" ] || {
+        _codex_err "shared config path is not a regular file: ${config_file}"
+        return 1
+    }
+    chmod 0600 "${auth_file}" "${config_file}"
+)
+
+_codex_lock_is_stale() {
+    local lock_dir="$1" pid started now
+
+    pid="$(sed -n '1p' "${lock_dir}/pid" 2>/dev/null || true)"
+    started="$(sed -n '1p' "${lock_dir}/started" 2>/dev/null || true)"
+    now="$(date +%s)" || return 1
+    case "${started}" in
+        ''|*[!0-9]*)
+            if [ "$(uname -s)" = Darwin ]; then
+                started="$(/usr/bin/stat -f %m "${lock_dir}" 2>/dev/null || true)"
+            else
+                started="$(stat -c %Y "${lock_dir}" 2>/dev/null || true)"
+            fi
+            ;;
+    esac
+    case "${started}" in
+        ''|*[!0-9]*) return 1 ;;
+    esac
+    if [ -n "${pid}" ] && kill -0 "${pid}" 2>/dev/null; then
+        return 1
+    fi
+    [ $((now - started)) -ge 600 ]
+}
+
+_codex_acquire_lock() {
+    local lock_dir="$1" attempts=0
+
+    while ! mkdir "${lock_dir}" 2>/dev/null; do
+        if _codex_lock_is_stale "${lock_dir}"; then
+            rm -rf -- "${lock_dir}"
+            continue
+        fi
+        attempts=$((attempts + 1))
+        if [ "${attempts}" -ge 30 ]; then
+            _codex_err "timed out waiting for image update lock: ${lock_dir}"
+            return 1
+        fi
+        sleep 1
+    done
+    printf '%s\n' "$$" > "${lock_dir}/pid"
+    date +%s > "${lock_dir}/started"
+}
+
+_codex_update_image() (
+    local image="$1" containerfile="$2"
+    local state_dir="${CODEX_CONTAINER_STATE_DIR:-${HOME}/.local/state/codex-container}"
+    local stamp="${state_dir}/image-check" lock_dir="${state_dir}/image.lock.d"
+    local today checked='' had_image=false
+
+    today="${CODEX_CONTAINER_TODAY:-$(date -u +%F)}" || return 1
+    [ -r "${stamp}" ] && IFS= read -r checked < "${stamp}"
+    [ "${checked}" = "${today}" ] && return 0
+
+    install -d -m 0700 "${state_dir}" || return 1
+    _codex_acquire_lock "${lock_dir}" || return 1
+    trap 'rm -rf -- "${lock_dir}"' EXIT INT TERM
+
+    checked=''
+    [ -r "${stamp}" ] && IFS= read -r checked < "${stamp}"
+    [ "${checked}" = "${today}" ] && return 0
+
+    podman image exists "${image}" && had_image=true
+    printf '%s\n' "${today}" > "${stamp}"
+    if ! podman build \
+        --platform linux/arm64 \
+        --pull=always \
+        --build-arg "CODEX_UPDATE_DAY=${today}" \
+        --file "${containerfile}" \
+        --tag "${image}" \
+        "$(dirname "${containerfile}")"; then
+        if [ "${had_image}" != true ]; then
+            rm -f -- "${stamp}"
+            _codex_err 'initial container image build failed'
+            return 1
+        fi
+        _codex_err 'update check failed; using the existing image'
+    fi
+)
+
+_codex_ensure_machine() {
+    local state
+
+    if ! podman machine inspect >/dev/null 2>&1; then
+        _codex_err 'the default Podman machine is missing; run setup.sh first'
+        return 1
+    fi
+    state="$(podman machine inspect --format '{{.State}}')" || return 1
+    if [ "${state}" != running ]; then
+        printf 'codex: starting the default Podman machine\n' >&2
+        podman machine start || return 1
+    fi
+}
+
+_codex_is_tty() {
+    [ -t "$1" ]
+}
+
+codex_container_main() {
+    local workspace workspace_id state_volume container_workspace
+    local image="${CODEX_CONTAINER_IMAGE:-localhost/codex-container:latest}"
+    local containerfile="${CODEX_CONTAINER_FILE:-${HOME}/.local/share/codex-container/Containerfile}"
+    local global_agents_file="${CODEX_CONTAINER_AGENTS_FILE:-${HOME}/.codex/AGENTS.md}"
+    local -a terminal_args=()
+
+    command -v podman >/dev/null 2>&1 || {
+        _codex_err 'podman is not installed'
+        return 127
+    }
+    [ -r "${containerfile}" ] || {
+        _codex_err "missing container recipe: ${containerfile}"
+        return 1
+    }
+    _codex_validate_global_agents "${global_agents_file}" || return
+    workspace="$(_codex_workspace)" || return
+    workspace_id="$(printf '%s' "${workspace}" | _codex_sha256 | awk '{print substr($1, 1, 24)}')" || return 1
+    state_volume="codex-home-${workspace_id}"
+    container_workspace="${workspace}"
+
+    _codex_init_shared_state || return
+    _codex_ensure_machine || return
+    _codex_update_image "${image}" "${containerfile}" || return
+
+    _codex_is_tty 0 && terminal_args+=(--interactive)
+    _codex_is_tty 1 && terminal_args+=(--tty)
+
+    podman run --rm \
+        "${terminal_args[@]}" \
+        --user 1000:1000 \
+        --security-opt no-new-privileges \
+        --cap-drop ALL \
+        --read-only \
+        --tmpfs /tmp:rw,nosuid,nodev,noexec,size=2g \
+        --tmpfs /run:rw,nosuid,nodev,noexec,size=64m \
+        --network pasta:--no-map-gw \
+        --ipc private \
+        --pid private \
+        --cgroupns private \
+        --pids-limit 512 \
+        --ulimit nofile=4096:4096 \
+        --hostname codex \
+        --env HOME=/home/codex \
+        --env XDG_CACHE_HOME=/home/codex/.cache \
+        --env XDG_CONFIG_HOME=/home/codex/.config \
+        --env XDG_STATE_HOME=/home/codex/.local/state \
+        --volume "${state_volume}:/home/codex:rw,U" \
+        --volume "${HOME}/.codex:/home/codex/.codex:rw" \
+        --volume "${global_agents_file}:/home/codex/.codex/AGENTS.md:ro" \
+        --volume "${HOME}/.agents/skills:/home/codex/.agents/skills:rw" \
+        --volume "${workspace}:${container_workspace}:rw" \
+        --workdir "${container_workspace}" \
+        "${image}" \
+        --config 'cli_auth_credentials_store="file"' \
+        "$@"
+}
+
+if [ "${CODEX_CONTAINER_TESTING:-0}" != 1 ]; then
+    codex_container_main "$@"
+fi

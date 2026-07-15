@@ -1,4 +1,28 @@
 ################################################
+##### Development
+################################################
+
+# Install Semble
+# https://github.com/MinishLab/semble
+# uv tool install semble
+
+# Install Playwright CLI
+brew install playwright-cli
+
+# Install Miniconda
+brew install --cask miniconda
+
+tee ${HOME}/.zshrc.d/conda << 'EOF'
+# Load conda
+eval "$(conda "shell.$(basename "${SHELL}")" hook)"
+EOF
+
+# ComfyUI
+tee ${HOME}/.zshrc.d/comfyui << 'EOF'
+alias comfyui="conda activate comfyui && python ~/src/ComfyUI/main.py"
+EOF
+
+################################################
 ##### Bluesnooze (Sleeping Mac = Bluetooth off)
 ################################################
 
