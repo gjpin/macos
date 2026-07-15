@@ -203,11 +203,11 @@ _codex_container_name() {
 }
 
 codex_container_main() {
-    local workspace workspace_id state_volume container_workspace container_name
+    local workspace workspace_id state_volume container_workspace container_name terminal_env
     local image="${CODEX_CONTAINER_IMAGE:-localhost/codex-container:latest}"
     local containerfile="${CODEX_CONTAINER_FILE:-${HOME}/.local/share/codex-container/Containerfile}"
     local global_agents_file="${CODEX_CONTAINER_AGENTS_FILE:-${HOME}/.codex/AGENTS.md}"
-    local -a terminal_args=()
+    local -a terminal_args=() terminal_env_args=()
 
     command -v podman >/dev/null 2>&1 || {
         _codex_err 'podman is not installed'
@@ -233,8 +233,22 @@ codex_container_main() {
     _codex_is_tty 0 && terminal_args+=(--interactive)
     _codex_is_tty 1 && terminal_args+=(--tty)
 
+    # Podman otherwise gives the container a generic terminal identity (usually
+    # TERM=xterm). Preserve the host terminal's capability hints so Codex can
+    # enable the same colors, graphics, notifications, and other TUI features.
+    for terminal_env in \
+        TERM COLORTERM TERM_PROGRAM TERM_PROGRAM_VERSION \
+        ITERM_SESSION_ID LC_TERMINAL LC_TERMINAL_VERSION \
+        KITTY_WINDOW_ID VTE_VERSION WEZTERM_PANE WT_SESSION \
+        TMUX TMUX_PANE ZELLIJ ZELLIJ_SESSION_NAME; do
+        if [ "${!terminal_env+x}" = x ]; then
+            terminal_env_args+=(--env "${terminal_env}=${!terminal_env}")
+        fi
+    done
+
     podman run --rm \
         "${terminal_args[@]}" \
+        "${terminal_env_args[@]}" \
         --name "${container_name}" \
         --user 1000:1000 \
         --security-opt no-new-privileges \
