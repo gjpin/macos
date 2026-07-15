@@ -4,6 +4,8 @@ When `uname -s` reports `Linux`, Codex is running as the non-root `codex` user i
 
 Only the directory from which Codex was launched is mounted as the workspace. The rest of the host home directory, host package manager, macOS services, devices, root filesystem, and Podman control socket are inaccessible. The container root filesystem is read-only and there is no `sudo` or host-level authority.
 
+When progress requires an action on the macOS host that Codex cannot perform from the container, tell the user the exact command or commands they need to run on the host. Include the required working directory and any relevant arguments or environment setup; do not merely state that the container cannot perform the action.
+
 Common development tools are already included. Python Playwright and pytest-playwright use the system Chromium browser at `/usr/bin/chromium`. Direct Playwright calls must use `launch(executable_path="/usr/bin/chromium")`. Pytest suites must merge the same executable path into their session-scoped `browser_type_launch_args` fixture while preserving existing arguments:
 
 ```python

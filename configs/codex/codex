@@ -194,8 +194,16 @@ _codex_is_tty() {
     [ -t "$1" ]
 }
 
+_codex_container_name() {
+    local workspace_name
+
+    workspace_name="$(basename -- "$1")" || return 1
+    workspace_name="$(printf '%s' "${workspace_name}" | LC_ALL=C sed 's/[^a-zA-Z0-9_.-]/_/g')" || return 1
+    printf 'codex_%s_%02d\n' "${workspace_name}" "$((RANDOM % 100))"
+}
+
 codex_container_main() {
-    local workspace workspace_id state_volume container_workspace
+    local workspace workspace_id state_volume container_workspace container_name
     local image="${CODEX_CONTAINER_IMAGE:-localhost/codex-container:latest}"
     local containerfile="${CODEX_CONTAINER_FILE:-${HOME}/.local/share/codex-container/Containerfile}"
     local global_agents_file="${CODEX_CONTAINER_AGENTS_FILE:-${HOME}/.codex/AGENTS.md}"
@@ -214,6 +222,7 @@ codex_container_main() {
     workspace_id="$(printf '%s' "${workspace}" | _codex_sha256 | awk '{print substr($1, 1, 24)}')" || return 1
     state_volume="codex-home-${workspace_id}"
     container_workspace="${workspace}"
+    container_name="$(_codex_container_name "${workspace}")" || return 1
 
     _codex_init_shared_state || return
     _codex_ensure_machine || return
@@ -224,6 +233,7 @@ codex_container_main() {
 
     podman run --rm \
         "${terminal_args[@]}" \
+        --name "${container_name}" \
         --user 1000:1000 \
         --security-opt no-new-privileges \
         --cap-drop ALL \
