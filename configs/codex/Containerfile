@@ -1,7 +1,5 @@
 FROM --platform=linux/arm64 registry.fedoraproject.org/fedora:44
 
-ARG CODEX_UPDATE_DAY=unknown
-
 RUN dnf --setopt=install_weak_deps=False --setopt=keepcache=False install -y \
         bash \
         bat \
@@ -111,8 +109,7 @@ RUN useradd --create-home --uid 1000 --user-group --shell /bin/bash codex \
         CODEX_NON_INTERACTIVE=1 \
         sh \
     && codex --version \
-    && rm -rf /root/.cache \
-    && printf '%s\n' "${CODEX_UPDATE_DAY}" > /usr/local/share/codex-image-update-day
+    && rm -rf /root/.cache
 
 ENV HOME=/home/codex \
     PATH=/opt/python-tools/bin:/usr/local/bin:/usr/bin:/bin \

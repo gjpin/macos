@@ -32,4 +32,4 @@ If a required tool is missing, continue independent useful work and report:
 - why it is needed; and
 - the exact blocked command or validation.
 
-Installing a tool on macOS does not make it available in this container. Permanent tools belong in the Codex `Containerfile`, followed by an image rebuild.
+Installing a tool on macOS does not make it available in this container. Permanent tools belong in the Codex `Containerfile`, followed by running `codex-update` on the macOS host.

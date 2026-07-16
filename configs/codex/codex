@@ -2,8 +2,10 @@
 
 set -o pipefail
 
+_codex_program=codex
+
 _codex_err() {
-    printf 'codex: %s\n' "$*" >&2
+    printf '%s: %s\n' "${_codex_program}" "$*" >&2
 }
 
 _codex_canonical_dir() {
@@ -143,37 +145,25 @@ _codex_acquire_lock() {
 _codex_update_image() (
     local image="$1" containerfile="$2"
     local state_dir="${CODEX_CONTAINER_STATE_DIR:-${HOME}/.local/state/codex-container}"
-    local stamp="${state_dir}/image-check" lock_dir="${state_dir}/image.lock.d"
-    local today checked='' had_image=false
-
-    today="${CODEX_CONTAINER_TODAY:-$(date -u +%F)}" || return 1
-    [ -r "${stamp}" ] && IFS= read -r checked < "${stamp}"
-    [ "${checked}" = "${today}" ] && return 0
+    local lock_dir="${state_dir}/image.lock.d"
 
     install -d -m 0700 "${state_dir}" || return 1
     _codex_acquire_lock "${lock_dir}" || return 1
     trap 'rm -rf -- "${lock_dir}"' EXIT INT TERM
 
-    checked=''
-    [ -r "${stamp}" ] && IFS= read -r checked < "${stamp}"
-    [ "${checked}" = "${today}" ] && return 0
-
-    podman image exists "${image}" && had_image=true
-    printf '%s\n' "${today}" > "${stamp}"
-    if ! podman build \
+    printf '%s: rebuilding container image %s\n' "${_codex_program}" "${image}" >&2
+    if podman build \
         --platform linux/arm64 \
         --pull=always \
-        --build-arg "CODEX_UPDATE_DAY=${today}" \
+        --no-cache \
         --file "${containerfile}" \
         --tag "${image}" \
         "$(dirname "${containerfile}")"; then
-        if [ "${had_image}" != true ]; then
-            rm -f -- "${stamp}"
-            _codex_err 'initial container image build failed'
-            return 1
-        fi
-        _codex_err 'update check failed; using the existing image'
+        printf '%s: container image updated successfully\n' "${_codex_program}" >&2
+        return 0
     fi
+    _codex_err 'container image update failed'
+    return 1
 )
 
 _codex_ensure_machine() {
@@ -205,17 +195,12 @@ _codex_container_name() {
 codex_container_main() {
     local workspace workspace_id state_volume container_workspace container_name terminal_env
     local image="${CODEX_CONTAINER_IMAGE:-localhost/codex-container:latest}"
-    local containerfile="${CODEX_CONTAINER_FILE:-${HOME}/.local/share/codex-container/Containerfile}"
     local global_agents_file="${CODEX_CONTAINER_AGENTS_FILE:-${HOME}/.codex/AGENTS.md}"
     local -a terminal_args=() terminal_env_args=()
 
     command -v podman >/dev/null 2>&1 || {
         _codex_err 'podman is not installed'
         return 127
-    }
-    [ -r "${containerfile}" ] || {
-        _codex_err "missing container recipe: ${containerfile}"
-        return 1
     }
     _codex_validate_global_agents "${global_agents_file}" || return
     workspace="$(_codex_workspace)" || return
@@ -228,7 +213,10 @@ codex_container_main() {
 
     _codex_init_shared_state || return
     _codex_ensure_machine || return
-    _codex_update_image "${image}" "${containerfile}" || return
+    podman image exists "${image}" || {
+        _codex_err "container image ${image} is missing; run codex-update first"
+        return 1
+    }
 
     _codex_is_tty 0 && terminal_args+=(--interactive)
     _codex_is_tty 1 && terminal_args+=(--tty)
@@ -278,6 +266,34 @@ codex_container_main() {
         "$@"
 }
 
+codex_container_update_main() {
+    local image="${CODEX_CONTAINER_IMAGE:-localhost/codex-container:latest}"
+    local containerfile="${CODEX_CONTAINER_FILE:-${HOME}/.local/share/codex-container/Containerfile}"
+
+    if [ "$#" -ne 0 ]; then
+        _codex_err 'usage: codex-update'
+        return 2
+    fi
+    command -v podman >/dev/null 2>&1 || {
+        _codex_err 'podman is not installed'
+        return 127
+    }
+    [ -r "${containerfile}" ] || {
+        _codex_err "missing container recipe: ${containerfile}"
+        return 1
+    }
+    _codex_ensure_machine || return
+    _codex_update_image "${image}" "${containerfile}"
+}
+
 if [ "${CODEX_CONTAINER_TESTING:-0}" != 1 ]; then
-    codex_container_main "$@"
+    case "$(basename -- "$0")" in
+        codex-update)
+            _codex_program=codex-update
+            codex_container_update_main "$@"
+            ;;
+        *)
+            codex_container_main "$@"
+            ;;
+    esac
 fi

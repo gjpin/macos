@@ -334,6 +334,7 @@ mkdir -p \
     "${HOME}/.agents/skills"
 
 install -m 0755 "${SETUP_DIR}/configs/codex/codex" "${HOME}/.local/bin/codex"
+ln -sfn codex "${HOME}/.local/bin/codex-update"
 install -m 0644 \
     "${SETUP_DIR}/configs/codex/Containerfile" \
     "${HOME}/.local/share/codex-container/Containerfile"
