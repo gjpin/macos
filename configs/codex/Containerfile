@@ -6,8 +6,10 @@ RUN dnf --setopt=install_weak_deps=False --setopt=keepcache=False install -y \
         bash \
         bat \
         bats \
+        bind-utils \
         bzip2 \
         ca-certificates \
+        cargo \
         chromium \
         clang \
         clang-tools-extra \
@@ -22,6 +24,8 @@ RUN dnf --setopt=install_weak_deps=False --setopt=keepcache=False install -y \
         gcc \
         gcc-c++ \
         gdb \
+        gettext-envsubst \
+        gh \
         git \
         git-lfs \
         golang \
@@ -36,20 +40,24 @@ RUN dnf --setopt=install_weak_deps=False --setopt=keepcache=False install -y \
         lld \
         lldb \
         llvm \
+        lsof \
         make \
         meson \
         mold \
         ninja-build \
+        nmap-ncat \
         nodejs \
         npm \
         openssh-clients \
+        openssl \
         patch \
         pkgconf-pkg-config \
         procps-ng \
         python3 \
         python3-devel \
+        ripgrep \
+        rsync \
         rust \
-        cargo \
         scons \
         sed \
         ShellCheck \
@@ -57,12 +65,16 @@ RUN dnf --setopt=install_weak_deps=False --setopt=keepcache=False install -y \
         sqlite \
         strace \
         tar \
+        time \
+        tree \
         unzip \
         util-linux \
         uv \
         wget \
         which \
+        xxd \
         xz \
+        yq \
         zip \
         zstd \
     && ln -s /usr/bin/chromium-browser /usr/bin/chromium \
