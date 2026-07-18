@@ -18,6 +18,7 @@ RUN dnf --setopt=install_weak_deps=False --setopt=keepcache=False install -y \
         fd-find \
         file \
         findutils \
+        fzf \
         gawk \
         gcc \
         gcc-c++ \
@@ -27,7 +28,7 @@ RUN dnf --setopt=install_weak_deps=False --setopt=keepcache=False install -y \
         git \
         git-lfs \
         golang \
-        golang-x-tools-gopls \
+        gopls \
         grep \
         gzip \
         iproute \
@@ -56,6 +57,8 @@ RUN dnf --setopt=install_weak_deps=False --setopt=keepcache=False install -y \
         ripgrep \
         rsync \
         rust \
+        rust-analyzer \
+        rustfmt \
         scons \
         sed \
         ShellCheck \
@@ -65,6 +68,7 @@ RUN dnf --setopt=install_weak_deps=False --setopt=keepcache=False install -y \
         tar \
         time \
         tree \
+        tree-sitter-cli \
         unzip \
         util-linux \
         uv \

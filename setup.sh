@@ -94,8 +94,8 @@ brew install --cask freecad
 # Set default branch name
 git config --global init.defaultBranch main
 
-# Install BATS
-brew install bats-core
+# Install Bash tools
+brew install bats-core shfmt
 
 # Install Python tools
 brew install ruff ty uv
