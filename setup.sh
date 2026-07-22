@@ -88,6 +88,45 @@ brew install --cask orcaslicer
 brew install --cask freecad
 
 ################################################
+##### Agents
+################################################
+
+# Install safehouse
+git clone https://github.com/gjpin/agent-safehouse.git ~/src/agent-safehouse
+cp ~/src/agent-safehouse/dist/safehouse.sh ~/.local/bin/safehouse
+chmod +x ~/.local/bin/safehouse
+
+# Configure Agent Safehouse
+mkdir -p ${HOME}/.config/agent-safehouse
+tee ${HOME}/.config/agent-safehouse/local-overrides.sb << 'EOF'
+;; Permanent access to ~/src
+(allow file-read* file-write*
+  (home-subpath "/src")
+)
+EOF
+
+tee ${HOME}/.zshrc.d/safehouse << 'EOF'
+# https://agent-safehouse.dev/docs/getting-started.html#shell-functions-recommended
+
+# Base
+export SAFEHOUSE_APPEND_PROFILE="$HOME/.config/agent-safehouse/local-overrides.sb"
+safe() { safehouse --append-profile="$SAFEHOUSE_APPEND_PROFILE" "$@"; }
+
+# Profiles
+codex()    { safe codex --dangerously-bypass-approvals-and-sandbox "$@"; }
+opencode() { safe -- OPENCODE_PERMISSION='{"*":"allow"}' opencode "$@"; }
+cursor()   { safe --enable=ssh -- /Applications/Cursor.app/Contents/MacOS/Cursor --no-sandbox "$@"; }
+EOF
+
+# Create Cursor Safehouse Application
+cp -R "configs/Cursor Safehouse.app" ~/Applications/
+
+# Install Agents
+brew install opencode
+brew install --cask codex
+brew install --cask cursor
+
+################################################
 ##### Development
 ################################################
 
@@ -135,9 +174,6 @@ EOF
 
 # Install Temurin JDK
 brew install --cask temurin
-
-# Install PI Coding Agent
-pnpm add -g --ignore-scripts @earendil-works/pi-coding-agent
 
 ################################################
 ##### Android
@@ -323,37 +359,6 @@ alias docker=podman
 EOF
 
 ################################################
-##### Codex container
-################################################
-
-# Install the container-backed Codex wrapper and its supporting files.
-mkdir -p \
-    "${HOME}/.local/bin" \
-    "${HOME}/.local/share/codex-container" \
-    "${HOME}/.codex" \
-    "${HOME}/.agents/skills"
-
-install -m 0755 "${SETUP_DIR}/configs/codex/codex" "${HOME}/.local/bin/codex"
-ln -sfn codex "${HOME}/.local/bin/codex-update"
-install -m 0644 \
-    "${SETUP_DIR}/configs/codex/Containerfile" \
-    "${HOME}/.local/share/codex-container/Containerfile"
-install -m 0600 "${SETUP_DIR}/configs/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md"
-
-(
-    umask 077
-    if [ ! -e "${HOME}/.codex/auth.json" ]; then
-        printf '{}\n' > "${HOME}/.codex/auth.json"
-    fi
-    if [ ! -e "${HOME}/.codex/config.toml" ]; then
-        : > "${HOME}/.codex/config.toml"
-    fi
-)
-
-chmod 0700 "${HOME}/.codex" "${HOME}/.agents" "${HOME}/.agents/skills"
-chmod 0600 "${HOME}/.codex/auth.json" "${HOME}/.codex/config.toml" "${HOME}/.codex/AGENTS.md"
-
-################################################
 ##### zsh
 ################################################
 
@@ -388,9 +393,6 @@ uv tool upgrade --all
 
 # Update pnpm packages
 # pnpm up -g --latest
-
-# Update Pi Coding Agent
-# pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @earendil-works/pi-coding-agent
 
 # Update dex2jar
 ${HOME}/.local/bin/dex2jar-manager.sh update

@@ -1,4 +1,35 @@
 ################################################
+##### Codex container
+################################################
+
+# Install the container-backed Codex wrapper and its supporting files.
+mkdir -p \
+    "${HOME}/.local/bin" \
+    "${HOME}/.local/share/codex-container" \
+    "${HOME}/.codex" \
+    "${HOME}/.agents/skills"
+
+install -m 0755 "${SETUP_DIR}/configs/codex/codex" "${HOME}/.local/bin/codex"
+ln -sfn codex "${HOME}/.local/bin/codex-update"
+install -m 0644 \
+    "${SETUP_DIR}/configs/codex/Containerfile" \
+    "${HOME}/.local/share/codex-container/Containerfile"
+install -m 0600 "${SETUP_DIR}/configs/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md"
+
+(
+    umask 077
+    if [ ! -e "${HOME}/.codex/auth.json" ]; then
+        printf '{}\n' > "${HOME}/.codex/auth.json"
+    fi
+    if [ ! -e "${HOME}/.codex/config.toml" ]; then
+        : > "${HOME}/.codex/config.toml"
+    fi
+)
+
+chmod 0700 "${HOME}/.codex" "${HOME}/.agents" "${HOME}/.agents/skills"
+chmod 0600 "${HOME}/.codex/auth.json" "${HOME}/.codex/config.toml" "${HOME}/.codex/AGENTS.md"
+
+################################################
 ##### Development
 ################################################
 

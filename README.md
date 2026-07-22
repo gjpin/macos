@@ -24,6 +24,7 @@
       * Font: MesloLGS Nerd Font Mono, 14
    * Advanced:
       * Scroll wheel sends arrow keys when in alternate screen mode: yes
+8. Drag "Cursor Safehouse" Application into dock
 
 ## Tips
 
