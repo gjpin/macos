@@ -91,6 +91,14 @@ brew install --cask freecad
 ##### Agents
 ################################################
 
+# Install Agents
+brew install opencode
+brew install --cask codex
+brew install pi-coding-agent
+
+# Pre-create agents's directory due to nono's sandbox
+mkdir -p ${HOME}/{.pi,.codex}
+
 # Install safehouse
 git clone https://github.com/gjpin/agent-safehouse.git ~/src/agent-safehouse
 cp ~/src/agent-safehouse/dist/safehouse.sh ~/.local/bin/safehouse
@@ -111,20 +119,40 @@ tee ${HOME}/.zshrc.d/safehouse << 'EOF'
 # Base
 export SAFEHOUSE_APPEND_PROFILE="$HOME/.config/agent-safehouse/local-overrides.sb"
 safe() { safehouse --append-profile="$SAFEHOUSE_APPEND_PROFILE" "$@"; }
-
-# Profiles
-codex()    { safe codex --dangerously-bypass-approvals-and-sandbox "$@"; }
-opencode() { safe -- OPENCODE_PERMISSION='{"*":"allow"}' opencode "$@"; }
-cursor()   { safe --enable=ssh -- /Applications/Cursor.app/Contents/MacOS/Cursor --no-sandbox "$@"; }
 EOF
 
-# Create Cursor Safehouse Application
+# Create Safehouse Applications
 cp -R "configs/Cursor Safehouse.app" ~/Applications/
 
-# Install Agents
-brew install opencode
-brew install --cask codex
-brew install --cask cursor
+# Install and configure nono/herd
+brew install nono herdr
+
+tee ${HOME}/.zshrc.d/agents << 'EOF'
+# https://nono.sh/docs/cli/getting_started/installation
+# https://herdr.dev/docs/agents/#vms-and-sandbox-wrappers
+# https://herdr.dev/docs/integrations/
+
+# Agents
+codex() {
+    HERDR_AGENT=codex \
+    nono run --profile nolabs-ai/codex --allow-cwd -- codex "$@"
+}
+
+opencode() {
+    HERDR_AGENT=opencode \
+    nono run --profile nolabs-ai/opencode --allow-cwd -- opencode "$@"
+}
+
+pi() {
+    HERDR_AGENT=pi \
+    nono run --profile nolabs-ai/pi --allow-cwd -- pi "$@"
+}
+EOF
+
+# Integrate herdr with agents
+herdr integration install pi
+herdr integration install opencode
+herdr integration install codex
 
 ################################################
 ##### Development
