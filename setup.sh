@@ -288,16 +288,58 @@ export MANPATH
 EOF
 
 ################################################
-##### iTerm2
+##### Ghostty
 ################################################
 
 # References:
 # https://antkowiak.it/en/enable-touchid-for-sudo-in-iterm-2/
 
-# Install iTerm2
-brew install --cask iterm2
+# Install and configure Ghostty
+brew install --cask ghostty
 
-# Enable TouchID for sudo in iTerm2
+tee "$HOME/.zshrc.d/zsh-syntax-highlighting" << 'EOF'
+typeset -A ZSH_HIGHLIGHT_STYLES
+ZSH_HIGHLIGHT_STYLES[comment]='fg=#cccccc'
+EOF
+
+mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/ghostty/themes"
+
+tee "${XDG_CONFIG_HOME:-$HOME/.config}/ghostty/themes/vscode-dark-modern" << 'EOF'
+# Ghostty theme based on Visual Studio Code Dark Modern
+# Background intentionally set to #181818.
+
+palette = 0=#000000
+palette = 1=#cd3131
+palette = 2=#0dbc79
+palette = 3=#e5e510
+palette = 4=#2472c8
+palette = 5=#bc3fbc
+palette = 6=#11a8cd
+palette = 7=#e5e5e5
+palette = 8=#666666
+palette = 9=#f14c4c
+palette = 10=#23d18b
+palette = 11=#f5f543
+palette = 12=#3b8eea
+palette = 13=#d670d6
+palette = 14=#29b8db
+palette = 15=#e5e5e5
+
+background = #181818
+foreground = #eeeeee
+
+cursor-color = #aeafad
+cursor-text = cell-background
+
+selection-background = #264f78
+selection-foreground = cell-foreground
+EOF
+
+tee ~/.config/ghostty/config.ghostty << 'EOF'
+theme = vscode-dark-modern
+EOF
+
+# Enable TouchID for sudo in terminal
 sudo gsed -i '1 a auth       sufficient     pam_tid.so' /etc/pam.d/sudo
 
 ################################################
