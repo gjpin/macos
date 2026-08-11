@@ -1,36 +1,11 @@
 # https://github.com/dreamsofautonomy/zensh/blob/main/.zshrc
 
-# Set the directory we want to store zinit and plugins
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+# Add Homebrew's zsh completions before initializing completion.
+FPATH="$(brew --prefix)/share/zsh-completions:$FPATH"
 
-# Download Zinit, if it's not there yet
-if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-fi
-
-# Source/Load zinit
-source "${ZINIT_HOME}/zinit.zsh"
-
-# Add in zsh plugins
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
-zinit light Aloxaf/fzf-tab
-
-# Add in snippets
-# zinit snippet OMZP::git
-# zinit snippet OMZP::sudo
-# zinit snippet OMZP::azure
-# zinit snippet OMZP::aws
-# zinit snippet OMZP::kubectl
-# zinit snippet OMZP::kubectx
-# zinit snippet OMZP::command-not-found
-
-# Load completions
-autoload -Uz compinit && compinit
-
-zinit cdreplay -q
+# Load completions.
+autoload -Uz compinit
+compinit
 
 # Keybindings
 bindkey -e
@@ -82,6 +57,22 @@ eval "$(fzf --zsh)"
 for file in ~/.zshrc.d/*; do
     source "$file"
 done
+
+# User specific environment
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
+    then
+        PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+    fi
+export PATH
+
+# Load Homebrew-installed zsh plugins after local widget and keybinding setup.
+brew_prefix="$(brew --prefix)"
+
+source "$brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "$brew_prefix/opt/fzf-tab/share/fzf-tab/fzf-tab.zsh"
+
+export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="$brew_prefix/share/zsh-syntax-highlighting/highlighters"
+source "$brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # Initialize Oh My Posh last so it sees all shell configuration and aliases.
 eval "$(oh-my-posh init zsh --config "${HOME}/.omp.json" --strict)"

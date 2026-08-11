@@ -445,6 +445,16 @@ docker context use lima-docker
 ##### zsh
 ################################################
 
+# Install ZSH plugins
+brew install \
+    zsh-syntax-highlighting \
+    zsh-completions \
+    zsh-autosuggestions \
+    fzf-tab
+
+# Rebuild the completion cache on the next interactive zsh startup.
+rm -f "${HOME}/.zcompdump"
+
 # Install Oh My Posh
 brew install jandedobbeleer/oh-my-posh/oh-my-posh
 
@@ -453,38 +463,6 @@ curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.omp.json -o
 
 # Import ZSH configs
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.zshrc -o ${HOME}/.zshrc
-
-# Add ~/.local/bin to the path
-tee ${HOME}/.zshrc.d/local-bin << 'EOF'
-# User specific environment
-if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
-then
-    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-fi
-export PATH
-EOF
-
-# Updater helper
-tee ${HOME}/.local/bin/update-all << 'EOF'
-#!/usr/bin/env zsh
-
-# Update brew repos
-brew update
-
-# Update brew packages
-brew upgrade
-
-# Update pip packages
-uv tool upgrade --all
-
-# Update pnpm packages
-# pnpm up -g --latest
-
-# Update dex2jar
-${HOME}/.local/bin/dex2jar-manager.sh update
-EOF
-
-chmod +x ${HOME}/.local/bin/update-all
 
 ################################################
 ##### Kubernetes / Cloud
