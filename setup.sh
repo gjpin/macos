@@ -445,8 +445,11 @@ docker context use lima-docker
 ##### zsh
 ################################################
 
-# Install powerlevel10k zsh theme
-curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.p10k.zsh -o ${HOME}/.p10k.zsh
+# Install Oh My Posh
+brew install jandedobbeleer/oh-my-posh/oh-my-posh
+
+# Install the local Oh My Posh theme
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.omp.json -o ${HOME}/.omp.json
 
 # Import ZSH configs
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.zshrc -o ${HOME}/.zshrc

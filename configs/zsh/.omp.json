@@ -1,0 +1,86 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "version": 4,
+  "final_space": true,
+  "tooltips_action": "replace",
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "newline": true,
+      "segments": [
+        {
+          "type": "path",
+          "style": "plain",
+          "foreground": "#61AFEF",
+          "template": "{{ .Path }}",
+          "options": {
+            "style": "agnoster_short",
+            "max_depth": 3,
+            "folder_separator_icon": "/",
+            "folder_icon": ".."
+          }
+        },
+        {
+          "type": "git",
+          "style": "plain",
+          "foreground": "#C678DD",
+          "template": " {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Staging.Changed }} +{{ .Staging.String }}{{ end }}{{ if .Working.Changed }} !{{ .Working.String }}{{ end }}",
+          "options": {
+            "fetch_status": true,
+            "branch_icon": ""
+          }
+        }
+      ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "newline": true,
+      "segments": [
+        {
+          "type": "text",
+          "style": "plain",
+          "foreground_templates": [
+            "{{ if eq .Code 0 }}#98C379{{ else }}#E06C75{{ end }}"
+          ],
+          "template": "❯ "
+        }
+      ]
+    }
+  ],
+  "tooltips": [
+    {
+      "type": "kubectl",
+      "tips": [
+        "kubectl",
+        "k",
+        "kx",
+        "ks",
+        "helm",
+        "kubens",
+        "kubectx",
+        "k9s",
+        "oc",
+        "istioctl",
+        "kogito",
+        "helmfile",
+        "flux",
+        "fluxctl",
+        "stern",
+        "kubeseal",
+        "skaffold",
+        "kubent",
+        "kubecolor",
+        "cmctl",
+        "sparkctl"
+      ],
+      "style": "plain",
+      "foreground": "#E5C07B",
+      "template": "{{ if .Cluster }}{{ .Cluster }}{{ else }}{{ .Context }}{{ end }}{{ if and .Namespace (ne .Namespace \"default\") }} / {{ .Namespace }}{{ end }}",
+      "options": {
+        "parse_kubeconfig": true
+      }
+    }
+  ]
+}
