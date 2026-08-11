@@ -452,8 +452,12 @@ brew install \
     zsh-autosuggestions \
     fzf-tab
 
-# Rebuild the completion cache on the next interactive zsh startup.
+# Rebuild the completion cache on the next interactive zsh startup
 rm -f "${HOME}/.zcompdump"
+
+# Fix insecure Homebrew zsh completion directory permissions
+chmod go-w '/opt/homebrew/share'
+chmod -R go-w '/opt/homebrew/share/zsh'
 
 # Install Oh My Posh
 brew install jandedobbeleer/oh-my-posh/oh-my-posh
