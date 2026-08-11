@@ -1,4 +1,36 @@
 ################################################
+##### Podman
+################################################
+
+# References:
+# https://docs.podman.io/en/v5.8.1/markdown/podman-machine-init.1.html
+# https://github.com/containers/krunkit
+
+# Install krunkit
+# brew tap slp/krun
+# brew install krunkit
+
+# Install Podman
+brew install podman podman-compose
+
+# Install Podman desktop
+brew install --cask podman-desktop
+
+# Init podman machine
+podman machine init \
+    --cpus 4 \
+    --memory 8192 \
+    --now
+
+# Install system helper service (provides better Docker compatibility)
+sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
+
+# Set Docker host path
+tee ${HOME}/.zshrc.d/podman << EOF
+alias docker=podman
+EOF
+
+################################################
 ##### Codex container
 ################################################
 
@@ -223,49 +255,6 @@ openshell sandbox create --name opencode -- opencode
 brew install --cask macfuse
 brew install gromgit/fuse/ntfs-3g-mac
 brew install --cask mounty
-
-################################################
-##### Docker (Lima)
-################################################
-
-# References:
-# https://lima-vm.io/docs/examples/containers/docker/
-# https://naomiaro.hashnode.dev/replacing-docker-desktop-with-lima-on-mac-os
-
-# Install Docker
-brew install docker docker-buildx docker-compose docker-credential-helper
-
-# Install Lima
-brew install lima
-
-# Create and configure Docker profile
-limactl create --name=docker template:docker-rootful
-limactl edit docker --cpus 2 --start=false
-limactl edit docker --memory 2 --start=false
-
-# Set Docker host path
-tee ${HOME}/.zshrc.d/docker << EOF
-export DOCKER_HOST=$(limactl list docker --format unix:///Users/${USER}/.lima/docker/sock/docker.sock)
-EOF
-
-# Configure Docker
-mkdir -p ${HOME}/.docker/
-tee ${HOME}/.docker/config.json << 'EOF'
-{
-    "cliPluginsExtraDirs": [
-        "/opt/homebrew/lib/docker/cli-plugins"
-    ]
-}
-EOF
-
-# Make ~/src writable by Lima
-sed -i '' '/mounts:/a\
-- location: "/Users/'"$USER"'/src"\
-  writable: true
-' "${HOME}/.lima/docker/lima.yaml"
-
-# Autostart Lima with Docker profile
-limactl start-at-login docker --enabled
 
 ################################################
 ##### Preferences

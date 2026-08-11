@@ -397,36 +397,49 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
 sudo launchctl enable system/com.wireguard.wg0
 
 ################################################
-##### Podman
+##### Docker (Lima)
 ################################################
 
 # References:
-# https://docs.podman.io/en/v5.8.1/markdown/podman-machine-init.1.html
-# https://github.com/containers/krunkit
+# https://lima-vm.io/docs/examples/containers/docker/
+# https://lima-vm.io/docs/usage/autostart/
+# https://docs.docker.com/engine/manage-resources/contexts/
 
-# Install krunkit
-# brew tap slp/krun
-# brew install krunkit
+# Install the Docker CLI and Lima. Docker runs inside Lima; the Docker CLI
+# connects through a persistent context rather than a shell-specific DOCKER_HOST.
+brew install \
+    docker \
+    docker-buildx \
+    docker-compose \
+    docker-credential-helper \
+    lima
 
-# Install Podman
-brew install podman podman-compose
-
-# Install Podman desktop
-brew install --cask podman-desktop
-
-# Init podman machine
-podman machine init \
-    --cpus 4 \
-    --memory 8192 \
-    --now
-
-# Install system helper service (provides better Docker compatibility)
-sudo "$(brew --prefix)/opt/podman/bin/podman-mac-helper" install
-
-# Set Docker host path
-tee ${HOME}/.zshrc.d/podman << EOF
-alias docker=podman
+# Configure Docker
+mkdir -p ${HOME}/.docker
+tee ${HOME}/.docker/config.json << 'EOF'
+{
+    "cliPluginsExtraDirs": [
+        "/opt/homebrew/lib/docker/cli-plugins"
+    ]
+}
 EOF
+
+# Create and configure Docker VM
+limactl create \
+    --name=docker \
+    --cpus=4 \
+    --memory=8 \
+    template:docker
+
+# Start Docker VM
+limactl start docker
+
+# Autostart Docker VM on login
+limactl autostart enable --condition=login docker
+
+# Create and use Docker context for Lima
+docker context create lima-docker --docker "host=unix:///Users/${USER}/.lima/docker/sock/docker.sock"
+docker context use lima-docker
 
 ################################################
 ##### zsh
