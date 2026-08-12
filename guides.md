@@ -1,4 +1,34 @@
 # Misc guides
+## WireGuard reconfiguration
+1. Disable wireguard
+```bash
+sudo launchctl bootout system /Library/LaunchDaemons/com.wireguard.wg0.plist
+sudo /opt/homebrew/bin/wg-quick down /etc/wireguard/wg0.conf
+sudo rm -f /var/run/wireguard/utun0.sock
+sudo rm -f /var/run/wireguard/wg0.name
+```
+
+2. Update /etc/wireguard/wg0.conf
+
+3. Re-enable wireguard
+```bash
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.wireguard.wg0.plist
+```
+
+4. Verify
+```bash
+sudo /opt/homebrew/bin/wg show
+```
+
+## Remove lingering login items and others
+
+- Check directories:
+   - /Library/LaunchDaemons
+   - ~/Library/LaunchAgents
+   - ~/Library/Application\ Support
+   - ~/Library/Preferences
+   - ~/Library/Caches
+
 ## Applications and system configurations
 ```bash
 # References:
