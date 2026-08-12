@@ -53,7 +53,7 @@ chmod go-w '/opt/homebrew/share'
 chmod -R go-w '/opt/homebrew/share/zsh'
 
 # Install Oh My Posh
-brew install jandedobbeleer/oh-my-posh/oh-my-posh
+brew install oh-my-posh
 
 # Install the local Oh My Posh theme
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.omp.json -o ${HOME}/.omp.json
