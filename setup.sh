@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# Resolve repository-owned files relative to this script, regardless of the
-# directory from which setup.sh is invoked.
-SETUP_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-
 ################################################
 ##### Dev and compatibility tools
 ################################################
@@ -25,15 +21,10 @@ softwareupdate --install-rosetta --agree-to-license
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ${HOME}/.zprofile
 
 # Disable brew analytics
-tee ${HOME}/.zshenv << EOF
-# Disable brew analytics
-export HOMEBREW_NO_ANALYTICS=1
-
-# Disable brew update hint
-export HOMEBREW_NO_ENV_HINTS=1
-EOF
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.zshenv -o ${HOME}/.zshenv
 
 # Make brew available now
+source "${HOME}/.zshenv"
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Fix brew permissions
@@ -41,11 +32,38 @@ sudo chown -R $USER /opt/homebrew/var/log
 chmod u+w /opt/homebrew/var/log
 
 ################################################
-##### Common applications
+##### zsh
 ################################################
 
 # Disable "last login" message
 touch ${HOME}/.hushlogin
+
+# Install ZSH plugins
+brew install \
+    zsh-syntax-highlighting \
+    zsh-completions \
+    zsh-autosuggestions \
+    fzf-tab
+
+# Rebuild the completion cache on the next interactive zsh startup
+rm -f "${HOME}/.zcompdump"
+
+# Fix insecure Homebrew zsh completion directory permissions
+chmod go-w '/opt/homebrew/share'
+chmod -R go-w '/opt/homebrew/share/zsh'
+
+# Install Oh My Posh
+brew install jandedobbeleer/oh-my-posh/oh-my-posh
+
+# Install the local Oh My Posh theme
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.omp.json -o ${HOME}/.omp.json
+
+# Import ZSH configs
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.zshrc -o ${HOME}/.zshrc
+
+################################################
+##### Common applications and directories
+################################################
 
 # Create common directories
 mkdir -p \
@@ -76,83 +94,14 @@ brew install \
 brew install --cask spotify
 brew install --cask brave-browser
 brew install --cask obsidian
-brew install --cask thunderbird
 brew install --cask bitwarden
-brew install --cask temurin
 brew install --cask lulu
-brew install --cask lm-studio
 brew install --cask handy
+brew install --cask caffeine
 
 # Install 3D printing apps
 brew install --cask orcaslicer
 brew install --cask freecad
-
-################################################
-##### Agents
-################################################
-
-# Install Agents
-brew install opencode
-brew install --cask codex
-brew install pi-coding-agent
-
-# Pre-create agents's directory due to nono's sandbox
-mkdir -p ${HOME}/{.pi,.codex}
-
-# Install safehouse
-git clone https://github.com/gjpin/agent-safehouse.git ~/src/agent-safehouse
-cp ~/src/agent-safehouse/dist/safehouse.sh ~/.local/bin/safehouse
-chmod +x ~/.local/bin/safehouse
-
-# Configure Agent Safehouse
-mkdir -p ${HOME}/.config/agent-safehouse
-tee ${HOME}/.config/agent-safehouse/local-overrides.sb << 'EOF'
-;; Permanent access to ~/src
-(allow file-read* file-write*
-  (home-subpath "/src")
-)
-EOF
-
-tee ${HOME}/.zshrc.d/safehouse << 'EOF'
-# https://agent-safehouse.dev/docs/getting-started.html#shell-functions-recommended
-
-# Base
-export SAFEHOUSE_APPEND_PROFILE="$HOME/.config/agent-safehouse/local-overrides.sb"
-safe() { safehouse --append-profile="$SAFEHOUSE_APPEND_PROFILE" "$@"; }
-EOF
-
-# Create Safehouse Applications
-cp -R "configs/Cursor Safehouse.app" ~/Applications/
-
-# Install and configure nono/herd
-brew install nono herdr
-
-tee ${HOME}/.zshrc.d/agents << 'EOF'
-# https://nono.sh/docs/cli/getting_started/installation
-# https://herdr.dev/docs/agents/#vms-and-sandbox-wrappers
-# https://herdr.dev/docs/integrations/
-
-# Agents
-codex() {
-    HERDR_AGENT=codex \
-    nono run --profile nolabs-ai/codex --allow-cwd -- codex "$@"
-}
-
-opencode() {
-    HERDR_AGENT=opencode \
-    nono run --profile nolabs-ai/opencode --allow-cwd -- opencode "$@"
-}
-
-pi() {
-    HERDR_AGENT=pi \
-    nono run --profile nolabs-ai/pi --allow-cwd -- pi "$@"
-}
-EOF
-
-# Integrate herdr with agents
-herdr integration install pi
-herdr integration install opencode
-herdr integration install codex
 
 ################################################
 ##### Development
@@ -202,27 +151,6 @@ EOF
 
 # Install Temurin JDK
 brew install --cask temurin
-
-################################################
-##### Android
-################################################
-
-# Install Android tools
-brew install --cask android-commandlinetools
-brew install --cask android-platform-tools
-brew install vineflower # alternative: fernflower
-brew install jadx
-brew install apktool
-
-# Install dex2jar
-# https://github.com/ThexXTURBOXx/dex2jar
-source ./dex2jar-manager.sh && install_dex2jar
-cp ./dex2jar-manager.sh ${HOME}/.local/bin/dex2jar-manager.sh && chmod +x ${HOME}/.local/bin/dex2jar-manager.sh
-
-# Required for agent skill
-tee ${HOME}/.zshrc.d/vineflower << 'EOF'
-export FERNFLOWER_JAR_PATH="/opt/homebrew/bin/vineflower"
-EOF
 
 ################################################
 ##### SSH
@@ -302,41 +230,10 @@ typeset -A ZSH_HIGHLIGHT_STYLES
 ZSH_HIGHLIGHT_STYLES[comment]='fg=#cccccc'
 EOF
 
-mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/ghostty/themes"
-
-tee "${XDG_CONFIG_HOME:-$HOME/.config}/ghostty/themes/vscode-dark-modern" << 'EOF'
-# Ghostty theme based on Visual Studio Code Dark Modern
-# Background intentionally set to #181818.
-
-palette = 0=#000000
-palette = 1=#cd3131
-palette = 2=#0dbc79
-palette = 3=#e5e510
-palette = 4=#2472c8
-palette = 5=#bc3fbc
-palette = 6=#11a8cd
-palette = 7=#e5e5e5
-palette = 8=#666666
-palette = 9=#f14c4c
-palette = 10=#23d18b
-palette = 11=#f5f543
-palette = 12=#3b8eea
-palette = 13=#d670d6
-palette = 14=#29b8db
-palette = 15=#e5e5e5
-
-background = #181818
-foreground = #eeeeee
-
-cursor-color = #aeafad
-cursor-text = cell-background
-
-selection-background = #264f78
-selection-foreground = cell-foreground
-EOF
+mkdir -p "~/.config/ghostty"
 
 tee ~/.config/ghostty/config.ghostty << 'EOF'
-theme = vscode-dark-modern
+theme = GitHub Dark High Contrast
 EOF
 
 # Enable TouchID for sudo in terminal
@@ -442,33 +339,6 @@ docker context create lima-docker --docker "host=unix:///Users/${USER}/.lima/doc
 docker context use lima-docker
 
 ################################################
-##### zsh
-################################################
-
-# Install ZSH plugins
-brew install \
-    zsh-syntax-highlighting \
-    zsh-completions \
-    zsh-autosuggestions \
-    fzf-tab
-
-# Rebuild the completion cache on the next interactive zsh startup
-rm -f "${HOME}/.zcompdump"
-
-# Fix insecure Homebrew zsh completion directory permissions
-chmod go-w '/opt/homebrew/share'
-chmod -R go-w '/opt/homebrew/share/zsh'
-
-# Install Oh My Posh
-brew install jandedobbeleer/oh-my-posh/oh-my-posh
-
-# Install the local Oh My Posh theme
-curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.omp.json -o ${HOME}/.omp.json
-
-# Import ZSH configs
-curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zsh/.zshrc -o ${HOME}/.zshrc
-
-################################################
 ##### Kubernetes / Cloud
 ################################################
 
@@ -491,29 +361,12 @@ EOF
 # Install OpenTofu
 brew install opentofu
 
+# Install Kind
+brew install kind
+
 # Install Packer
 brew tap hashicorp/tap
 brew install hashicorp/tap/packer
-
-# Install minikube
-# brew install minikube vfkit
-# minikube config set driver vfkit
-# minikube config set cpus 2
-# minikube config set memory 4096
-
-################################################
-##### Zed
-################################################
-
-# Install Zed
-brew install --cask zed
-
-# Configure Zed
-mkdir -p ${HOME}/.config/zed/themes
-curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zed/settings.json -o ${HOME}/.config/zed/settings.json
-
-# Download VSCode Dark Modern theme
-curl https://raw.githubusercontent.com/kcamcam/vscode_dark_modern.zed/refs/heads/main/themes/vscode-dark-modern.json -o ${HOME}/.config/zed/themes/vscode-dark-modern.json
 
 ################################################
 ##### Visual Studio Code
@@ -527,13 +380,10 @@ mkdir -p "${HOME}/Library/Application Support/Code/User"
 curl https://raw.githubusercontent.com/gjpin/macos/main/configs/vscode/settings.json -o "${HOME}/Library/Application Support/Code/User/settings.json"
 
 # Install extensions
+code --install-extension ms-vscode-remote.remote-ssh
+code --install-extension ms-vscode-remote.remote-ssh-edit
+code --install-extension ms-vscode.remote-explorer
 code --install-extension ms-vscode-remote.remote-containers
-# code --install-extension kilocode.kilo-code
-# code --install-extension golang.go
-# code --install-extension astral-sh.ty
-# code --install-extension charliermarsh.ruff
-# code --install-extension ms-vscode.remote-explorer
-# code --install-extension ms-vscode-remote.remote-ssh
 
 ################################################
 ##### Fonts

@@ -1,4 +1,106 @@
 ################################################
+##### Zed
+################################################
+
+# Install Zed
+brew install --cask zed
+
+# Configure Zed
+mkdir -p ${HOME}/.config/zed/themes
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/zed/settings.json -o ${HOME}/.config/zed/settings.json
+
+# Download VSCode Dark Modern theme
+curl https://raw.githubusercontent.com/kcamcam/vscode_dark_modern.zed/refs/heads/main/themes/vscode-dark-modern.json -o ${HOME}/.config/zed/themes/vscode-dark-modern.json
+
+################################################
+##### Android
+################################################
+
+# Install Android tools
+brew install --cask android-commandlinetools
+brew install --cask android-platform-tools
+brew install vineflower # alternative: fernflower
+brew install jadx
+brew install apktool
+
+# Install dex2jar
+# https://github.com/ThexXTURBOXx/dex2jar
+source ./dex2jar-manager.sh && install_dex2jar
+cp ./dex2jar-manager.sh ${HOME}/.local/bin/dex2jar-manager.sh && chmod +x ${HOME}/.local/bin/dex2jar-manager.sh
+
+# Required for agent skill
+tee ${HOME}/.zshrc.d/vineflower << 'EOF'
+export FERNFLOWER_JAR_PATH="/opt/homebrew/bin/vineflower"
+EOF
+
+################################################
+##### Agents
+################################################
+
+# Install Agents
+brew install opencode
+brew install --cask codex
+brew install pi-coding-agent
+
+# Pre-create agents's directory due to nono's sandbox
+mkdir -p ${HOME}/{.pi,.codex}
+
+# Install safehouse
+git clone https://github.com/gjpin/agent-safehouse.git ~/src/agent-safehouse
+cp ~/src/agent-safehouse/dist/safehouse.sh ~/.local/bin/safehouse
+chmod +x ~/.local/bin/safehouse
+
+# Configure Agent Safehouse
+mkdir -p ${HOME}/.config/agent-safehouse
+tee ${HOME}/.config/agent-safehouse/local-overrides.sb << 'EOF'
+;; Permanent access to ~/src
+(allow file-read* file-write*
+  (home-subpath "/src")
+)
+EOF
+
+tee ${HOME}/.zshrc.d/safehouse << 'EOF'
+# https://agent-safehouse.dev/docs/getting-started.html#shell-functions-recommended
+
+# Base
+export SAFEHOUSE_APPEND_PROFILE="$HOME/.config/agent-safehouse/local-overrides.sb"
+safe() { safehouse --append-profile="$SAFEHOUSE_APPEND_PROFILE" "$@"; }
+EOF
+
+# Create Safehouse Applications
+cp -R "configs/Cursor Safehouse.app" ~/Applications/
+
+# Install and configure nono/herd
+brew install nono herdr
+
+tee ${HOME}/.zshrc.d/agents << 'EOF'
+# https://nono.sh/docs/cli/getting_started/installation
+# https://herdr.dev/docs/agents/#vms-and-sandbox-wrappers
+# https://herdr.dev/docs/integrations/
+
+# Agents
+codex() {
+    HERDR_AGENT=codex \
+    nono run --profile nolabs-ai/codex --allow-cwd -- codex "$@"
+}
+
+opencode() {
+    HERDR_AGENT=opencode \
+    nono run --profile nolabs-ai/opencode --allow-cwd -- opencode "$@"
+}
+
+pi() {
+    HERDR_AGENT=pi \
+    nono run --profile nolabs-ai/pi --allow-cwd -- pi "$@"
+}
+EOF
+
+# Integrate herdr with agents
+herdr integration install pi
+herdr integration install opencode
+herdr integration install codex
+
+################################################
 ##### Podman
 ################################################
 

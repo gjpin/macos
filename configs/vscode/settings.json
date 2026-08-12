@@ -21,9 +21,7 @@
     "git.autofetch": true,
     "workbench.colorTheme": "Dark Modern",
     "workbench.colorCustomizations": {
-      "[Dark Modern]": {
-        "editor.background": "#181818"
-      }
+      "editor.background": "#181818"
     },
     "editor.fontSize": 14,
     "update.showReleaseNotes": false,
