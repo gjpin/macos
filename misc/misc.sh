@@ -1,4 +1,50 @@
 ################################################
+##### Development
+################################################
+
+# Install Bash tools
+brew install bats-core shfmt
+
+# Install Temurin JDK
+brew install --cask temurin
+
+# Install Python tools
+brew install ruff ty uv
+
+# Install golang
+brew install go
+
+tee ${HOME}/.zshrc.d/go << EOF
+export GOPATH=${HOME}/.go
+PATH="$(go env GOPATH)/bin:\$PATH"
+EOF
+
+# Install node and package managers
+brew install node npm pnpm
+
+# Configure npm
+npm config set ignore-scripts true
+
+mkdir -p ${HOME}/.npm-global
+
+npm config set prefix "${HOME}/.npm-global"
+
+tee ${HOME}/.zshrc.d/npm << 'EOF'
+export PATH=$HOME/.npm-global/bin:$PATH
+EOF
+
+# Configure pnpm
+mkdir -p ${HOME}/.pnpm/bin
+
+tee ${HOME}/.zshrc.d/pnpm << 'EOF'
+export PNPM_HOME="$HOME/.pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+EOF
+
+################################################
 ##### Zed
 ################################################
 
