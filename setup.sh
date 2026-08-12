@@ -364,6 +364,10 @@ brew install opentofu
 # Install Kind
 brew install kind
 
+# Install minikube and vfkit
+brew install minikube vfkit
+minikube config set driver vfkit
+
 # Install Packer
 brew tap hashicorp/tap
 brew install hashicorp/tap/packer
