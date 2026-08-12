@@ -290,7 +290,7 @@ limactl create \
 limactl start docker
 
 # Autostart Docker VM on login
-# limactl autostart enable --condition=login docker
+limactl autostart enable --condition=login docker
 
 # Create and use Docker context for Lima
 docker context create lima-docker --docker "host=unix:///Users/${USER}/.lima/docker/sock/docker.sock"
