@@ -110,6 +110,11 @@ brew install --cask freecad
 # Set default branch name
 git config --global init.defaultBranch main
 
+# Install and configure herdr
+brew install herdr
+mkdir -p ${HOME}/.config/herdr
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/herdr/config.toml -o ${HOME}/.config/herdr/config.toml
+
 ################################################
 ##### SSH
 ################################################

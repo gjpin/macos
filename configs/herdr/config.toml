@@ -1,0 +1,11 @@
+onboarding = false
+
+[ui.toast]
+delivery = "terminal"
+
+[theme]
+name = "catppuccin"
+auto_switch = false
+
+[ui]
+agent_panel_sort = "priority"
