@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 
 ################################################
-##### Dev and compatibility tools
+##### Mac dev tools
 ################################################
 
 # Install Xcode Command Line Tools
 xcode-select --install
-
-# Install Rosetta
-softwareupdate --install-rosetta --agree-to-license
 
 ################################################
 ##### brew
@@ -30,6 +27,13 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # Fix brew permissions
 sudo chown -R $USER /opt/homebrew/var/log
 chmod u+w /opt/homebrew/var/log
+
+tee ${HOME}/.local/bin/brew-update << 'EOF'
+# Update all brew packages
+brew update && brew upgrade --greedy && brew cleanup
+EOF
+
+chmod +x ${HOME}/.local/bin/brew-update
 
 ################################################
 ##### zsh
@@ -88,7 +92,12 @@ brew install \
     jsonnet \
     cmake \
     make \
-    gnupg
+    gnupg \
+    age \
+    sops \
+    rsync \
+    argon2 \
+    bcrypt
 
 # Install casks
 brew install --cask spotify
@@ -194,10 +203,7 @@ ZSH_HIGHLIGHT_STYLES[comment]='fg=#cccccc'
 EOF
 
 mkdir -p "~/.config/ghostty"
-
-tee ~/.config/ghostty/config.ghostty << 'EOF'
-theme = GitHub Dark High Contrast
-EOF
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/ghostty/config.ghostty -o "${HOME}/.config/ghostty/config.ghostty"
 
 # Enable TouchID for sudo in terminal
 sudo gsed -i '1 a auth       sufficient     pam_tid.so' /etc/pam.d/sudo
@@ -276,13 +282,7 @@ brew install \
 
 # Configure Docker
 mkdir -p ${HOME}/.docker
-tee ${HOME}/.docker/config.json << 'EOF'
-{
-    "cliPluginsExtraDirs": [
-        "/opt/homebrew/lib/docker/cli-plugins"
-    ]
-}
-EOF
+curl https://raw.githubusercontent.com/gjpin/macos/main/configs/docker/config.json -o "${HOME}/.docker/config.json"
 
 # Create and configure Docker VM
 limactl create \

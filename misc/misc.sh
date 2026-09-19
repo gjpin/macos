@@ -155,8 +155,8 @@ herdr integration install codex
 # https://github.com/containers/krunkit
 
 # Install krunkit
-# brew tap slp/krun
-# brew install krunkit
+brew tap slp/krun
+brew install krunkit
 
 # Install Podman
 brew install podman podman-compose
