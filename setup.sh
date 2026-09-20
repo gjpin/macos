@@ -333,7 +333,13 @@ minikube config set driver vfkit
 
 # Install Packer
 brew tap hashicorp/tap
+brew trust hashicorp/tap
 brew install hashicorp/tap/packer
+
+# Install Talos
+brew tap siderolabs/tap
+brew trust siderolabs/tap
+brew install siderolabs/tap/talosctl
 
 ################################################
 ##### Visual Studio Code
