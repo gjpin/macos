@@ -301,6 +301,11 @@ limactl autostart enable --condition=login docker
 docker context create lima-docker --docker "host=unix:///Users/${USER}/.lima/docker/sock/docker.sock"
 docker context use lima-docker
 
+# Set Docker Host
+tee ${HOME}/.zshrc.d/docker << EOF
+export DOCKER_HOST="$(limactl list docker --format 'unix://{{.Dir}}/sock/docker.sock')"
+EOF
+
 ################################################
 ##### Kubernetes / Cloud
 ################################################
