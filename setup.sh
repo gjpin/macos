@@ -287,8 +287,8 @@ curl https://raw.githubusercontent.com/gjpin/macos/main/configs/docker/config.js
 # Create and configure Docker VM
 limactl create \
     --name=docker \
-    --cpus=4 \
-    --memory=8 \
+    --cpus=8 \
+    --memory=16 \
     template:docker
 
 # Start Docker VM
@@ -305,6 +305,15 @@ docker context use lima-docker
 tee ${HOME}/.zshrc.d/docker << EOF
 export DOCKER_HOST="$(limactl list docker --format 'unix://{{.Dir}}/sock/docker.sock')"
 EOF
+
+# Raise inotify limits
+limactl shell docker sudo tee /etc/sysctl.d/99-kind-inotify.conf <<'EOF'
+fs.inotify.max_user_instances = 1024
+fs.inotify.max_user_watches = 524288
+fs.inotify.max_queued_events = 16384
+EOF
+
+limactl shell docker sudo sysctl --system
 
 ################################################
 ##### Kubernetes / Cloud
