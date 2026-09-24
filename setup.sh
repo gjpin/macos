@@ -101,6 +101,7 @@ brew install \
 
 # Install casks
 brew install --cask spotify
+brew install --cask vivaldi
 brew install --cask brave-browser
 brew install --cask obsidian
 brew install --cask bitwarden
